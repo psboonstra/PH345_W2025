@@ -1,0 +1,338 @@
+---
+title: "Univariate Plots"
+author: "Phil Boonstra"
+subtitle: "PH345: Winter 2025"
+format: 
+  revealjs:
+    smaller: true
+    scrollable: true
+    theme: serif
+editor: visual
+preview:
+  application: "open -a Preview" # Adjust for your preferred app
+---
+
+```{r, message = FALSE}
+def.chunk.hook  <- knitr::knit_hooks$get("chunk")
+knitr::knit_hooks$set(chunk = function(x, options) {
+  x <- def.chunk.hook(x, options)
+  ifelse(options$size != "normalsize", paste0("\n \\", options$size,"\n\n", x, "\n\n \\normalsize"), x)
+})
+
+library(datasauRus)
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+library(cowplot)
+load("ultrarunning.RData")
+ultrarunning <- 
+  ultrarunning %>%
+  mutate(original_order = 1:n()) %>%
+  mutate(pb100k_dec_cat = cut(pb100k_dec, breaks = seq(5.5, 25.5, 1), labels = seq(6, 25, 1))) %>%
+  mutate(pb100k_dec_cat_label = as.numeric(as.character(pb100k_dec_cat))) %>%
+  arrange(pb100k_dec) %>%
+  group_by(pb100k_dec_cat) %>%
+  mutate(height = row_number() - 0.5) %>%
+  mutate(pb100k_dec_char = formatC(pb100k_dec, format = "f", digits = 1)) %>%
+  arrange(original_order)
+```
+
+## Univariate Plots
+
+::::: columns
+::: {.column width="30%"}
+Univariate plots are used to visualize the distribution of a single variable.
+:::
+
+::: {.column width="70%"}
+![](740539.jpg)
+:::
+:::::
+
+## Examples
+
+-   Histograms
+-   Boxplots
+-   Barplots
+
+## Ultra-runner data (Samtleben, 2023)
+
+$n = 288$ ultra-runners (completing 100km ultra-marathons)
+
+Each runner's personal best (in hours):
+
+```{r,  size = "tiny"}
+ultrarunning$pb100k_dec
+```
+
+::: aside
+<https://causeweb.org/tshs/ultra-running/>
+:::
+
+## Creating a histogram
+
+1.  Choose a bin size and a center value, e.g. one hour bins centered at the integers would be denoted as $(5.5, 6.5]$, $(6.5, 7.5]$, $(7.5, 8.5]$, etc. Bins must be non-overlapping, and there should be enough bins to completely cover the data.
+
+2.  Assign each runner to a bin, e.g. 12.98 goes into the $(12, 13]$ bin and 12.0 goes in to the $(11, 12]$ bin
+
+3.  Plot bars for each bin, with the height of the bar corresponding to the number of runners in that bin
+
+## 
+
+```{r}
+ggplot(ultrarunning) +
+  geom_text(aes(x = pb100k_dec_cat_label, y = height, label = pb100k_dec_char), size = 2) + 
+  scale_x_continuous(limits = c(5.5, 26), expand = expansion(0.02)) +
+  scale_y_continuous(limits = c(0, 46), expand = expansion(0.02)) +  
+  labs(x = "Personal best time (hours)",
+       y = "Count") +
+  theme(text = element_text(size = 24))
+```
+
+## 
+
+```{r}
+ggplot(ultrarunning) + 
+  geom_histogram(aes(x = pb100k_dec), binwidth = 1, center = 10, fill = "white", color = "black") + 
+  geom_text(aes(x = pb100k_dec_cat_label, y = height, label = pb100k_dec_char), size = 2) + 
+  scale_x_continuous(limits = c(5.5, 26), expand = expansion(0.02)) +
+  scale_y_continuous(limits = c(0, 46), expand = expansion(0.02)) +  
+  labs(x = "Personal best time (hours)",
+       y = "Count") +
+  theme(text = element_text(size = 24))
+```
+
+## 
+
+```{r}
+ggplot(ultrarunning) + 
+  geom_histogram(aes(x = pb100k_dec), binwidth = 1, center = 10, fill = "white", color = "black") + 
+  scale_x_continuous(limits = c(5.5, 26), expand = expansion(0.02)) +
+  scale_y_continuous(limits = c(0, 46), expand = expansion(0.02)) +  
+  labs(x = "Personal best time (hours)",
+       y = "Count") +
+  theme(text = element_text(size = 24))
+```
+
+## 
+
+::: panel-tabset
+### Plot
+
+```{r}
+ggplot(ultrarunning) + 
+  geom_histogram(aes(x = pb100k_dec), binwidth = 1, center = 10, fill = "grey", color = "black") + 
+  labs(x = "Personal best time (hours)",
+       y = "Count") +
+  theme(text = element_text(size = 24))
+```
+
+### Code
+
+```{r, echo = TRUE, eval = FALSE}
+ggplot(ultrarunning) + 
+  geom_histogram(aes(x = pb100k_dec), binwidth = 1, center = 10, fill = "grey", color = "black") + 
+  labs(x = "Personal best time (hours)",
+       y = "Count") +
+  theme(text = element_text(size = 24))
+```
+:::
+
+## Bin width of 10 hours -- too large
+
+```{r}
+ggplot(ultrarunning) + 
+  geom_histogram(aes(x = pb100k_dec), binwidth = 10, fill = "grey", color = "black") + 
+  scale_x_continuous(expand = expansion(0.02)) +
+  labs(x = "Personal best time (hours)",
+       y = "Count") +
+  theme(text = element_text(size = 24))
+```
+
+## Bin width of 3 minutes -- too small
+
+```{r}
+ggplot(ultrarunning) + 
+  geom_histogram(aes(x = pb100k_dec), binwidth = 0.05, fill = "grey", color = "black") + 
+  scale_x_continuous(expand = expansion(0.02)) +
+  labs(x = "Personal best time (hours)",
+       y = "Count") +
+  theme(text = element_text(size = 24))
+```
+
+## Boxplots
+
+Find the five-number summary: minimum, lower quartile, median, upper quartile, maximum
+
+```{r, echo = TRUE}
+quantile(ultrarunning$pb100k_dec)
+```
+
+IQR = upper quartile - lower quartile
+
+## 
+
+```{r}
+foo <- 
+  quantile(ultrarunning$pb100k_dec) %>%
+  enframe(value = "pb100k_dec")
+foo_iqr = foo$pb100k_dec[4] - foo$pb100k_dec[2]
+foo2 <-
+  bind_rows(
+    tibble(name = "lower_hinge", 
+           start = foo$pb100k_dec[2],
+           end = max(foo$pb100k_dec[1], foo$pb100k_dec[2] - 1.5 * foo_iqr)),
+    tibble(name = "upper_hinger", 
+           start = foo$pb100k_dec[4],
+           end = min(foo$pb100k_dec[5], foo$pb100k_dec[4] + 1.5 * foo_iqr)),
+  )
+p1 <- 
+  ggplot(ultrarunning) +
+  geom_point(aes(x = pb100k_dec, y = 1), position = position_jitter(width = 0, height = 0.25, seed = 1)) + 
+  scale_y_continuous(breaks = NULL, name = NULL, limits = c(0, 2)) +
+  labs(x = "Personal best time (hours)") +
+  theme(text = element_text(size = 24))
+p1
+```
+
+## 
+
+```{r}
+p1 +   
+  geom_segment(data = foo, aes(x = pb100k_dec, xend = pb100k_dec, y = 0.5, yend = 1.5), color = "black")
+```
+
+## 
+
+```{r}
+p1 +   
+  geom_segment(data = foo, aes(x = pb100k_dec, xend = pb100k_dec, y = 0.5, yend = 1.5), color = "black") +
+  geom_segment(data = foo2, aes(x = start, xend = end, y = 1, yend = 1), color = "black")
+```
+
+## 
+
+```{r}
+p1 +   
+  geom_boxplot(aes(x = pb100k_dec, y = 1), fill = "#00000000", outlier.shape = NA)
+```
+
+## 
+
+::: panel-tabset
+### Plot
+
+```{r}
+ggplot(ultrarunning) +
+  geom_boxplot(aes(x = pb100k_dec, y = 1)) +
+  labs(x = "Personal best time (hours)") +
+  theme(text = element_text(size = 24)) +
+  scale_y_continuous(breaks = NULL, name = NULL, limits = c(0, 2)) +
+  theme(text = element_text(size = 24))
+```
+
+### Code
+
+```{r, echo = TRUE, eval = FALSE}
+ggplot(ultrarunning) +
+  geom_boxplot(aes(x = pb100k_dec, y = 1)) +
+  labs(x = "Personal best time (hours)") +
+  theme(text = element_text(size = 24)) +
+  scale_y_continuous(breaks = NULL, name = NULL, limits = c(0, 2)) +
+  theme(text = element_text(size = 24))
+```
+:::
+
+## Example: Hodgkin Lymphoma
+
+-   Cancer of the lymphatic system
+-   Occurs in most often in young adults (age 20-29) and elderly (75-84)
+
+## HL age of diagnosis in UK females
+
+```{r}
+foo <- read_csv("../../HodgkinsLymphoma/ukstatistics.csv")
+foo2 <- tibble(x = sample(foo$`Age Range`, size = 3e6, prob = foo$`Female Rates`, replace = TRUE)) %>%
+  mutate(age = str_extract(x, "\\d+") %>% as.numeric() + runif(n(), min = 0, max = 5)) 
+```
+
+```{r}
+p1 <- ggplot(foo2) + 
+  geom_histogram(aes(x = age), binwidth = 5, boundary = 20, fill = "white", color = "black") +
+  scale_x_continuous(limits = c(5, 95), expand = expansion(0.02)) +
+  scale_y_continuous(name = NULL, breaks = NULL) +
+  theme(text = element_text(size = 24))
+p2 <- ggplot(foo2) + 
+  geom_boxplot(aes(x = age, y = 1)) +
+  scale_x_continuous(limits = c(5, 95), expand = expansion(0.02)) +
+  scale_y_continuous(name = NULL, breaks = NULL, limits = c(0, 2)) +
+  theme(text = element_text(size = 24))
+```
+
+## 
+
+```{r, fig.height = 5}
+p2
+```
+
+::: aside
+<https://www.cancerresearchuk.org/health-professional/cancer-statistics/statistics-by-cancer-type/hodgkin-lymphoma/incidence#heading-One>
+:::
+
+## 
+
+```{r, fig.height = 6}
+plot_grid(p1, p2, nrow = 2, rel_heights = c(1, 0.7), align = "v")
+```
+
+Potentially misleading conclusion when looking at boxplot alone
+
+Boxplots do not show multimodality
+
+## Barcharts
+
+```{r, echo = TRUE}
+# Create a new variable to store the surface type
+ultrarunning <-
+  ultrarunning %>%
+  mutate(pb_surface_name = 
+           case_when(
+             pb_surface == 1 ~ "trail",
+             pb_surface == 2 ~ "track",
+             pb_surface == 3 ~ "road",
+             pb_surface == 4 ~ "mix of all three"
+           ))
+```
+
+## 
+
+::: panel-tabset
+### Plot
+
+```{r}
+ggplot(ultrarunning) +
+  geom_bar(aes(x = pb_surface_name)) +
+  labs(x = "Surface type",
+       y = "Count") +
+  theme(text = element_text(size = 24))
+```
+
+### Code
+
+```{r, echo = TRUE, eval = FALSE}
+ggplot(ultrarunning) +
+  geom_bar(aes(x = pb_surface_name)) +
+  labs(x = "Surface type",
+       y = "Count") +
+  theme(text = element_text(size = 24))
+
+```
+:::
+
+## Comparison to histograms
+
+-   Barcharts are used for categorical data
+
+## References
+
+Samtleben, E. (2023) Ultrarunning dataset. Teaching of Statistics in the Health Sciences Resource Portal, Available at https://www.causeweb.org/tshs/ultra-running/.

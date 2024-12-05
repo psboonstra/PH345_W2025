@@ -1,0 +1,279 @@
+---
+title: "Aesthetics (encodings)"
+author: "Phil Boonstra"
+subtitle: "PH345: Winter 2025"
+format: 
+  revealjs:
+    smaller: true
+    scrollable: true
+    theme: serif
+editor: visual
+preview:
+  application: "open -a Preview" # Adjust for your preferred app
+---
+
+```{r, message = FALSE}
+def.chunk.hook  <- knitr::knit_hooks$get("chunk")
+knitr::knit_hooks$set(chunk = function(x, options) {
+  x <- def.chunk.hook(x, options)
+  ifelse(options$size != "normalsize", paste0("\n \\", options$size,"\n\n", x, "\n\n \\normalsize"), x)
+})
+library(tidyverse)
+library(knitr)
+```
+
+## *Farbtafel*, Paul Klee (1930)
+
+![](tidying-up-art-ursus-wehrli-17.jpg)
+
+Which color appears most often?
+
+::: {style="font-size: 75%;"}
+https://www.demilked.com/tidying-up-art-ursus-wehrli/
+:::
+
+## Tidied up *Farbtafel*, Ursus Wehrli (2003)
+
+![](tidying-up-art-ursus-wehrli-18.jpg)
+
+Which color appears most often?
+
+::: {style="font-size: 75%;"}
+https://www.demilked.com/tidying-up-art-ursus-wehrli/
+:::
+
+
+## Mapping data to aesthetics
+
+*Aesthetics* or *encodings* are ways that we map data to visual properties of the plot and include
+position, color, length, shape, area, volume
+
+Choice of aesthetics helps or hinders your audience's understanding of what the data are showing 
+
+## Example: five proportions
+
+One number for each of five groups (A-E)
+
+
+
+## Plot 1
+```{r}
+# Create Data
+set.seed(1);
+data1 <- 
+  tibble(value=sample(23, 5, F)) %>%
+  mutate(value = value / sum(value)) %>%
+  mutate(max_value = value == max(value)) %>%
+  arrange(max_value, desc(value)) %>%
+  mutate(group = LETTERS[1:5])
+
+# Basic piechart
+p1 <- ggplot(data1, aes(x="", y=value, fill=group)) +
+  geom_bar(stat="identity", width=1, color="white") +
+  coord_polar("y", start=0) +
+  theme_void(base_size = 14)
+p1
+```
+
+## Plot 2
+
+```{r}
+set.seed(2);
+data2 <- 
+  tibble(value=sample(23, 5, F)) %>%
+  mutate(value = value / sum(value)) %>%
+  mutate(group = LETTERS[1:5])
+
+p2 <- ggplot(data2, aes(x="", y=value, fill=group)) +
+  geom_bar(stat="identity", width=1, color="white") +
+  coord_polar("y", start=0) +
+  scale_fill_manual(values = scales::hue_pal()(5), 
+                    breaks = LETTERS[1:5]) +
+  theme_void(base_size = 14)
+p2
+```
+
+## Plot 3
+
+```{r}
+set.seed(3);
+data3 <- 
+  tibble(value=sample(23, 5, F)) %>%
+  mutate(value = value / sum(value)) %>%
+  mutate(group = LETTERS[1:5])
+
+
+p3 <- ggplot(data3, aes(x = "", y = value, fill = group)) +
+  geom_bar(stat = "identity", width = 1, color = "white") +
+  scale_x_discrete(name = NULL) + 
+  theme(text = element_text(size = 14), 
+        axis.ticks.x = element_blank())
+p3
+```
+
+## Plot 4
+
+```{r}
+set.seed(4);
+data4 <- 
+  tibble(value=sample(23, 5, F)) %>%
+  mutate(value = value / sum(value)) %>%
+  mutate(group = LETTERS[1:5])
+
+
+p4 <- ggplot(data4, aes(x = group, y = value)) +
+  geom_bar(stat = "identity", width = 1, color = "white") +
+  theme(text = element_text(size = 14))
+p4
+```
+## Plot 5
+
+```{r}
+set.seed(5);
+data5 <- 
+  tibble(value=sample(23, 5, F)) %>%
+  mutate(value = value / sum(value)) %>%
+  arrange(desc(value)) %>%
+  mutate(group = LETTERS[1:5])
+
+p5 <- ggplot(data5, aes(x = group, y = value)) +
+  geom_bar(stat = "identity", width = 1, color = "white") +
+  theme(text = element_text(size = 14))
+p5
+```
+
+## Plot 6
+
+```{r}
+set.seed(6);
+data6 <- 
+  tibble(value=sample(23, 5, F)) %>%
+  mutate(value = value / sum(value)) %>%
+  mutate(group = LETTERS[1:5])
+
+p6 <- ggplot(data6, aes(x = group, y = value)) +
+  geom_point(size = 5) +
+  scale_y_continuous(limits = c(0, 0.42)) +
+  theme(text = element_text(size = 14))
+p6
+```
+
+## Plot 7
+
+```{r}
+set.seed(7);
+data7 <- 
+  tibble(value=sample(23, 5, F)) %>%
+  mutate(value = value / sum(value)) %>%
+  arrange(desc(value)) %>%
+  mutate(group = LETTERS[1:5])
+
+p7 <- ggplot(data7, aes(x = group, y = value)) +
+  geom_point(size = 5) +
+  scale_y_continuous(limits = c(0, max(data7$value))) +
+  theme(text = element_text(size = 14))
+p7
+```
+
+## Plot 8
+
+```{r}
+set.seed(8);
+data8 <- 
+  tibble(value=sample(23, 5, F)) %>%
+  mutate(value = value / sum(value)) %>%
+  mutate(group = LETTERS[1:5])
+
+p8 <- ggplot(data8) + 
+  geom_point(aes(x = group, color = value), y = 1, size = 5) +
+  coord_cartesian(ylim = c(0.9, 1.1))
+p8
+```
+
+## Plot 9
+
+```{r}
+set.seed(9);
+data9 <- 
+  tibble(value=sample(23, 5, F)) %>%
+  mutate(value = value / sum(value)) %>%
+  mutate(group = LETTERS[1:5])
+
+
+p9 <- ggplot(data9) + 
+  geom_point(aes(x = group, size = value), y = 1) +
+  coord_cartesian(ylim = c(0.9, 1.1))
+p9
+```
+
+##
+
+```{r, fig.height = 8}
+
+library(cowplot)
+plot_grid(p1, p2, p3, p4, p5, p6, p7, p8, p9, labels = 1:9)
+
+```
+
+
+## True values
+
+```{r}
+all_Bs <- 
+  bind_rows(
+    data1 %>% mutate(rank = rank(value)) %>% filter(group == "B") %>% mutate(dataset = 1),
+    data2 %>% mutate(rank = rank(value)) %>% filter(group == "B") %>% mutate(dataset = 2),
+    data3 %>% mutate(rank = rank(value)) %>% filter(group == "B") %>% mutate(dataset = 3),
+    data4 %>% mutate(rank = rank(value)) %>% filter(group == "B") %>% mutate(dataset = 4),
+    data5 %>% mutate(rank = rank(value)) %>% filter(group == "B") %>% mutate(dataset = 5),
+    data6 %>% mutate(rank = rank(value)) %>% filter(group == "B") %>% mutate(dataset = 6),
+    data7 %>% mutate(rank = rank(value)) %>% filter(group == "B") %>% mutate(dataset = 7),
+    data8 %>% mutate(rank = rank(value)) %>% filter(group == "B") %>% mutate(dataset = 8),
+    data9 %>% mutate(rank = rank(value)) %>% filter(group == "B") %>% mutate(dataset = 9)
+  )
+
+true_values <- all_Bs %>% pivot_wider(id_cols = group, names_from = dataset, values_from = value) %>% select(-group)
+true_ranks <- all_Bs %>% pivot_wider(id_cols = group, names_from = dataset, values_from = rank) %>% select(-group)
+true_values %>% kable()
+true_values %>% kable()
+```
+
+##
+
+```{r}
+library(googlesheets4)
+gs4_deauth()
+class_responses <- read_sheet("https://docs.google.com/spreadsheets/d/1wxvkwo3-gsBvF4VK6aOu8RaXcpCSmJmBjEvyr1Yo6jc/edit?resourcekey=#gid=673516564")
+
+bias_values <- 
+  # class estimates of values
+  (class_responses %>% select(seq(2, 19, by = 2)) %>% rename_all(~c("1", "2", "3", "4", "5", "6", "7", "8", "9")) - 
+     # stack multiple copies of true_values, matching number of rows of class_responses:
+     bind_rows(true_values %>% slice(rep(1:n(), nrow(class_responses))))) %>%
+  pivot_longer(everything())
+
+bias_ranks <- 
+  # class estimates of ranks
+  (class_responses %>% select(seq(3, 19, by = 2)) %>% rename_all(~c("1", "2", "3", "4", "5", "6", "7", "8", "9")) - 
+     # stack multiple copies of true_values, matching number of rows of class_responses:
+     bind_rows(true_ranks %>% slice(rep(1:n(), nrow(class_responses))))) %>%
+  pivot_longer(everything())
+
+
+ggplot(bias_values, aes(x = name, y = value)) + 
+  geom_jitter(height = 0, width = 0.25, alpha = 0.8, size = 2) + 
+  labs(x = "Plot", y = "Bias") + 
+  theme(text = element_text(size = 17))
+```
+
+
+
+## Types of data
+
+- Quantitative: numbers that measure units, e.g. years, kg, etc. Differences between numbers have meaning
+- Ordinal: numbers or categories that have natural order, e.g. Likert scales, tumor stage. Distances between numbers do not have consistent meaning ('Almost always' - 'Sometimes' = ?)
+- Nominal: Categories that have no inherent order, e.g. US states
+
+
+
+

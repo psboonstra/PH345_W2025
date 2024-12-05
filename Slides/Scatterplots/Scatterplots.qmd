@@ -1,0 +1,467 @@
+---
+title: "Scatterplots"
+author: "Phil Boonstra"
+subtitle: "PH345: Winter 2025"
+format: 
+  revealjs:
+    smaller: true
+    scrollable: true
+    theme: serif
+editor: visual
+preview:
+  application: "open -a Preview" # Adjust for your preferred app
+---
+
+## Edward R Tufte
+
+::::: columns
+::: {.column width="50%"}
+American political scientist, statistician, and professor emeritus at Yale University
+
+'Godfather' of data visualization and visual presentation of information
+
+Author of Visual Display of Quantitative Information (2001)
+:::
+
+::: {.column width="50%"}
+![](Edward_Tufte_-_cropped.jpg){width="50%"}
+:::
+:::::
+
+::: {style="font-size: 75%;"}
+Photo by Keegan Peterzell - Own work, CC BY-SA 4.0, https://commons.wikimedia.org/w/index.php?curid=40367115
+:::
+
+## Eight principles of graphical excellence
+
+::: {.fragment .highlight-red fragment-index="1"}
+-   Show the data
+-   Reveal the data at several levels of detail
+-   Encourage comparison between data
+:::
+
+-   Induce the viewer to think about the substance
+-   Avoid distorting what the data says
+-   Present many numbers in small space
+-   Make large data sets coherent
+-   Clear purpose: description, exploration, tabulation or decoration
+
+## 
+
+```{r, message = FALSE}
+library(datasauRus)
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+datasaurus_dozen2 <- 
+  datasaurus_dozen %>%
+  filter(dataset %in% c("circle", "dino", "slant_down")) %>%
+  mutate(dataset2 = factor(dataset) %>% as.numeric() %>% factor())
+```
+
+::::: columns
+::: {.column width="45%"}
+Three datasets:
+
+```{r}
+datasaurus_dozen2 %>%
+  group_by(dataset2) %>%
+  summarise(n = n(), 
+            mean.x = mean(x), sd.x = sd(x),
+            mean.y = mean(y), sd.y = sd(y),
+            cor.xy = cor(x, y)) %>%
+  mutate(across(c(mean.x, mean.y, sd.x, sd.y), \(x) round(x, 1)), 
+         cor.xy = round(cor.xy, 2),
+         n = round(n, 0)) %>%
+  pivot_longer(cols = n:cor.xy) %>% 
+  mutate(value = as.character(value)) %>%
+  pivot_wider(id_cols = name, names_from = dataset2, values_from = value) %>%
+  kable(col.names = c("", 1:3)) %>%
+  #kable_styling(font_size = 10) %>%
+  add_header_above(c(" " = 1, "Dataset" = 3))
+```
+:::
+
+::: {.column width="55%"}
+```{r, fig.height = 12}
+ggplot(datasaurus_dozen2 %>% pivot_longer(cols = c(x, y))) +
+  geom_point(aes(y = dataset2, x = value), size = 3) + 
+  facet_wrap(vars(name), ncol = 1) +
+  labs(y = "Dataset", x = NULL) + 
+  theme(text = element_text(size = 48)) 
+
+```
+:::
+:::::
+
+## Graphical excellence
+
+*Show the data*
+
+## 
+
+```{r, fig.width = 13}
+ggplot(datasaurus_dozen2) +
+  geom_point(aes(x = x, y = y), size = 3) + 
+  facet_wrap(vars(dataset2), ncol = 3) +
+  guides(color = "none") +
+  theme(text = element_text(size = 24)) 
+```
+
+## 
+
+```{r, fig.width = 13, fig.height = 8}
+p1 <-
+  ggplot(datasaurus_dozen) +
+  geom_point(aes(x = x, y = y), size = 1) + 
+  facet_wrap(vars(dataset), ncol = 5) +
+  labs(x = NULL, y = NULL) + 
+  guides(color = "none") +
+  theme(text = element_text(size = 18)) 
+p1
+```
+
+## 
+
+All datasets have the nearly equal summary statistics:
+
+-   number of observations
+-   mean of x and y
+-   standard deviation of x and y
+-   correlation between x and y (and same regression of y on x)
+
+## 
+
+```{r}
+datasaurus_dozen %>% 
+  group_by(dataset) %>% 
+  group_modify(~ enframe(coef(lm(y ~ x, data = .x)))) %>% 
+  pivot_wider(id_cols = dataset) %>%
+  mutate(across(where(is.numeric), \(x) formatC(x, format = "f", 2))) %>%
+  kable(col.names = c("Dataset","Intercept", "Slope"))
+```
+
+## 
+
+```{r, fig.width = 13, fig.height = 8}
+p1 +
+  geom_smooth(aes(x = x, y = y), color = "black", method = "lm", se = FALSE)
+```
+
+## Scatterplots are simplest bivariate plots
+
+Steps:
+
+1.  Set of paired numbers $(x_i, y_i)$ where $i$ indexes pairs, e.g. $(x_1, y_1)$ is first pair, $(x_2, y_2)$ is second pair, etc.
+
+2.  Place points on a cartesian coordinate system. Labeling of points reflects assumption that $x_i$ goes on the x-axis, $y_i$ goes on y-axis
+
+## Example: Figure 7 (Doll, 1955)
+
+::::: columns
+::: {.column width="30%"}
+Lung-cancer deaths per million in 1950 ($y$) against annual per-capita cigarette consumption in 1930 ($x$) for 11 countries.
+:::
+
+::: {.column width="60%"}
+![](LungCancer2.png)
+:::
+:::::
+
+::: {style="font-size: 75%;"}
+<https://www.sciencedirect.com/science/article/pii/S0065230X08609173>
+:::
+
+## Scatterplots imply a relationship
+
+::::: columns
+::: {.column width="40%"}
+So don't create a scatterplot if you don't want to imply a relationship.
+:::
+
+::: {.column width="60%"}
+![](spurious1.png)
+:::
+:::::
+
+::: {style="font-size: 75%;"}
+<https://www.tylervigen.com/spurious-correlations>
+:::
+
+## Dependent vs Independent Variables
+
+Two main types of scatterplots:
+
+1.  $x$ and $y$ are both uncontrolled. Goal is to show whether they are co-varying
+
+2.  $x$ is controlled or "independent" variable, e.g. time, age, dose, or an experimentally controlled variable.
+
+## William Playfair (1759-1823)
+
+-   Scottish engineer, economist, proto-government-spy, and many other things
+
+> When he wasn’t blackmailing lords and being sued for libel, William Playfair invented the pie chart, the bar graph, and the line graph
+
+Cara Giamo, 2016
+
+::: {style="font-size: 75%;"}
+<https://www.atlasobscura.com/articles/the-scottish-scoundrel-who-changed-how-we-see-data>
+:::
+
+## Case study: Playfair's graph of prices, wages, and British monarchs
+
+![](playfair1.png){width="80%"}
+
+> Never at any former time was wheat so cheap, in proportional to mechanical labor, as it is in the present time (Playfair)
+
+::: {style="font-size: 75%;"}
+Figure 3, <https://onlinelibrary.wiley.com/doi/epdf/10.1002/jhbs.20078>; Originally from Tufte, p34
+:::
+
+```{r, echo = FALSE}
+# price of a quarter of wheat, in shillings
+# weekly wage for a good mechanic, in shillings
+# the ruling British monarch at the time
+# Two separate variables plotted against time
+```
+
+## Modernization Attempt 1
+
+### "Pure" scatterplot
+
+![](playfair3.png){width="80%"}
+
+Direct scatterplot of wheat price and wage, connected by consecutive years
+
+::: {style="font-size: 75%;"}
+Figure 5, <https://onlinelibrary.wiley.com/doi/epdf/10.1002/jhbs.20078>
+:::
+
+## Modernization Attempt 2
+
+### Create new variable
+
+![](playfair2.png){width="80%"}
+
+Now very easy to see Playfair's claim about inflation-adjusted price of wheat. Statistical graphics should reveal data (Tufte, p13)
+
+::: {style="font-size: 75%;"}
+Figure 5, <https://onlinelibrary.wiley.com/doi/epdf/10.1002/jhbs.20078>
+:::
+
+## Graphical excellence
+
+*Reveal the data at several levels of detail*
+
+**Aesthetics** are quantitative mappings of data to visual properties:
+
+-   x and y coordinates
+-   size / area / volume
+-   color
+-   transparency
+-   shape
+
+## Temperature anomalies
+
+Land and ocean anomalies from 1850 to 2024 with respect to the 1901-2000 average
+
+Separate data for northern and southern hemispheres
+
+## Northern hemisphere
+
+```{r, message = FALSE, echo = FALSE}
+temps_southern <- 
+  bind_cols(hemi = "Southern",
+            read_csv("../../Temperatures/temp_southern.csv", skip = 4))
+temps_northern <-
+  bind_cols(hemi = "Northern",
+            read_csv("../../Temperatures/temp_northern.csv", skip = 4))
+
+ggplot(temps_northern) +
+  geom_point(aes(x = Year, y = Anomaly), size = 1) + 
+  scale_x_continuous(name = NULL, expand = expansion(0.01)) +
+  scale_y_continuous(name = "Temperature Anomaly (C)", n.breaks = 6) + 
+  theme(text = element_text(size = 24))
+```
+
+Average temperature anomalies in the northern hemisphere over time
+
+::: {style="font-size: 75%;"}
+<https://www.ncei.noaa.gov/access/monitoring/climate-at-a-glance/global/time-series>
+:::
+
+## Connected lines
+
+```{r, message = FALSE, echo = FALSE}
+
+ggplot(temps_northern) +
+  geom_point(aes(x = Year, y = Anomaly), size = 1) + 
+  geom_line(aes(x = Year, y = Anomaly)) +
+  scale_x_continuous(name = NULL, expand = expansion(0.01)) +
+  scale_y_continuous(name = "Temperature Anomaly (C)", n.breaks = 6) + 
+  theme(text = element_text(size = 24))
+```
+
+Emphasis on interyear variability
+
+::: {style="font-size: 75%;"}
+<https://www.ncei.noaa.gov/access/monitoring/climate-at-a-glance/global/time-series>
+:::
+
+## Smooth interpolation
+
+```{r, message = FALSE, echo = FALSE}
+
+ggplot(temps_northern) +
+  geom_point(aes(x = Year, y = Anomaly), size = 1) + 
+  geom_smooth(aes(x = Year, y = Anomaly), method = "gam", se = FALSE) +
+  scale_x_continuous(name = NULL, expand = expansion(0.01)) +
+  scale_y_continuous(name = "Temperature Anomaly (C)", n.breaks = 6) + 
+  theme(text = element_text(size = 24))
+```
+
+Emphasis on trend
+
+::: {style="font-size: 75%;"}
+<https://www.ncei.noaa.gov/access/monitoring/climate-at-a-glance/global/time-series>
+:::
+
+## Bars
+
+```{r}
+ggplot(temps_northern) +
+  geom_col(aes(x = Year, y = Anomaly), position = "dodge") + 
+  scale_x_continuous(name = NULL, expand = expansion(0.01)) +
+  scale_y_continuous(name = "Temperature Anomaly (C)", n.breaks = 6) + 
+  theme(text = element_text(size = 24))
+```
+
+Emphasis on positive vs negative deviation
+
+::: {style="font-size: 75%;"}
+<https://www.ncei.noaa.gov/access/monitoring/climate-at-a-glance/global/time-series>
+:::
+
+## Ribbon
+
+```{r}
+ggplot(temps_northern) +
+  geom_ribbon(aes(x = Year, ymin = 0, ymax = Anomaly), alpha = 0.6) + 
+  scale_x_continuous(name = NULL, expand = expansion(0.01)) +
+  scale_y_continuous(name = "Temperature Anomaly (C)", n.breaks = 6) + 
+  theme(text = element_text(size = 24))
+```
+
+Emphasis on positive vs negative deviation, also on time spent above or below
+
+::: {style="font-size: 75%;"}
+<https://www.ncei.noaa.gov/access/monitoring/climate-at-a-glance/global/time-series>
+:::
+
+## Graphical excellence
+
+*Encourage comparison between data*
+
+## Northern, Southern hemispheres
+
+```{r, message = FALSE, echo = FALSE}
+temps <-
+  bind_rows(temps_southern, temps_northern)
+
+ggplot(temps) +
+  geom_point(aes(x = Year, y = Anomaly, color = hemi), size = 1) + 
+  scale_x_continuous(name = NULL, expand = expansion(0.01)) +
+  scale_color_manual(name = NULL, values = c("#1B9E77", "#D95F02")) +
+  scale_y_continuous(name = "Temperature Anomaly (C)", n.breaks = 6) + 
+  theme(text = element_text(size = 24), 
+        legend.position = "inside",
+        legend.position.inside = c(0.15, 0.7))
+```
+
+::: {style="font-size: 75%;"}
+<https://www.ncei.noaa.gov/access/monitoring/climate-at-a-glance/global/time-series>
+:::
+
+## 
+
+```{r, message = FALSE, echo = FALSE}
+
+ggplot(temps) +
+  geom_point(aes(x = Year, y = Anomaly, color = hemi), size = 1) + 
+  geom_step(aes(x = Year, y = Anomaly, color = hemi)) +
+  scale_x_continuous(name = NULL, expand = expansion(0.01)) +
+  scale_color_manual(name = NULL, values = c("#1B9E77", "#D95F02")) +
+  scale_y_continuous(name = "Temperature Anomaly (C)", n.breaks = 6) + 
+  theme(text = element_text(size = 24), 
+        legend.position = "inside",
+        legend.position.inside = c(0.15, 0.7))
+```
+
+::: {style="font-size: 75%;"}
+<https://www.ncei.noaa.gov/access/monitoring/climate-at-a-glance/global/time-series>
+:::
+
+## 
+
+```{r, message = FALSE, echo = FALSE}
+
+ggplot(temps) +
+  geom_point(aes(x = Year, y = Anomaly, color = hemi), size = 1) + 
+  geom_smooth(aes(x = Year, y = Anomaly, color = hemi), method = "gam", se = FALSE) +
+  scale_x_continuous(name = NULL, expand = expansion(0.01)) +
+  scale_color_manual(name = NULL, values = c("#1B9E77", "#D95F02")) +
+  scale_y_continuous(name = "Temperature Anomaly (C)", n.breaks = 6) + 
+  theme(text = element_text(size = 24), 
+        legend.position = "inside",
+        legend.position.inside = c(0.15, 0.7))
+```
+
+::: {style="font-size: 75%;"}
+<https://www.ncei.noaa.gov/access/monitoring/climate-at-a-glance/global/time-series>
+:::
+
+## 
+
+```{r}
+ggplot(temps) +
+  geom_col(aes(x = Year, y = Anomaly, fill = hemi), position = "dodge") + 
+  scale_x_continuous(name = NULL, expand = expansion(0.01)) +
+  scale_fill_manual(name = NULL, values = c("#1B9E77", "#D95F02")) +
+  scale_y_continuous(name = "Temperature Anomaly (C)", n.breaks = 6) + 
+  theme(text = element_text(size = 24), 
+        legend.position = "inside",
+        legend.position.inside = c(0.15, 0.7))
+```
+
+::: {style="font-size: 75%;"}
+<https://www.ncei.noaa.gov/access/monitoring/climate-at-a-glance/global/time-series>
+:::
+
+## 
+
+```{r}
+ggplot(temps) +
+  geom_ribbon(aes(x = Year, ymin = 0, ymax = Anomaly, fill = hemi), alpha = 0.6) + 
+  scale_x_continuous(name = NULL, expand = expansion(0.01)) +
+  scale_fill_manual(name = NULL, values = c("#1B9E77", "#D95F02")) +
+  scale_y_continuous(name = "Temperature Anomaly (C)", n.breaks = 6) + 
+  theme(text = element_text(size = 24), 
+        legend.position = "inside",
+        legend.position.inside = c(0.15, 0.7))
+```
+
+::: {style="font-size: 75%;"}
+<https://www.ncei.noaa.gov/access/monitoring/climate-at-a-glance/global/time-series>
+:::
+
+## Summary
+
+\[Still need\]
+
+## References
+
+Doll, R., 1955. *Etiology of lung cancer*. In Advances in cancer research (Vol. 3, pp. 1-50).
+
+Friendly, M. and Denis, D., 2005. The early origins and development of the scatterplot. Journal of the History of the Behavioral Sciences, 41(2), pp.103-130.
+
+Tufte, E.R., 2001. *The visual display of quantitative information*.
