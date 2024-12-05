@@ -3,15 +3,17 @@ title: "Aesthetics (encodings)"
 author: "Phil Boonstra"
 subtitle: "PH345: Winter 2025"
 format: 
-  revealjs:
-    smaller: true
-    scrollable: true
-    theme: serif
+  live-revealjs:
     self-contained: true
 editor: visual
+engine: knitr
 preview:
   application: "open -a Preview" # Adjust for your preferred app
 ---
+
+<!-- {{< include ../../_extensions/r-wasm/live/_knitr.qmd >}} -->
+
+{{< include "./_extensions/r-wasm/live/_knitr.qmd" >}}
 
 ```{r, message = FALSE}
 def.chunk.hook  <- knitr::knit_hooks$get("chunk")
@@ -269,3 +271,11 @@ ggplot(bias_values, aes(x = name, y = value)) +
 -   Quantitative: numbers that measure units, e.g. years, kg, etc. Differences between numbers have meaning
 -   Ordinal: numbers or categories that have natural order, e.g. Likert scales, tumor stage. Distances between numbers do not have consistent meaning ('Almost always' - 'Sometimes' = ?)
 -   Nominal: Categories that have no inherent order, e.g. US states
+
+## 
+
+```{webr}
+for (x in 1:5) {
+  print(x ** 2)
+}
+```
