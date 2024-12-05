@@ -7,6 +7,7 @@ format:
     smaller: true
     scrollable: true
     theme: serif
+    self-contained: true
 editor: visual
 preview:
   application: "open -a Preview" # Adjust for your preferred app
@@ -42,21 +43,18 @@ Which color appears most often?
 https://www.demilked.com/tidying-up-art-ursus-wehrli/
 :::
 
-
 ## Mapping data to aesthetics
 
-*Aesthetics* or *encodings* are ways that we map data to visual properties of the plot and include
-position, color, length, shape, area, volume
+*Aesthetics* or *encodings* are ways that we map data to visual properties of the plot and include position, color, length, shape, area, volume
 
-Choice of aesthetics helps or hinders your audience's understanding of what the data are showing 
+Choice of aesthetics helps or hinders your audience's understanding of what the data are showing
 
 ## Example: five proportions
 
 One number for each of five groups (A-E)
 
-
-
 ## Plot 1
+
 ```{r}
 # Create Data
 set.seed(1);
@@ -126,6 +124,7 @@ p4 <- ggplot(data4, aes(x = group, y = value)) +
   theme(text = element_text(size = 14))
 p4
 ```
+
 ## Plot 5
 
 ```{r}
@@ -206,7 +205,7 @@ p9 <- ggplot(data9) +
 p9
 ```
 
-##
+## 
 
 ```{r, fig.height = 8}
 
@@ -214,7 +213,6 @@ library(cowplot)
 plot_grid(p1, p2, p3, p4, p5, p6, p7, p8, p9, labels = 1:9)
 
 ```
-
 
 ## True values
 
@@ -238,7 +236,7 @@ true_values %>% kable()
 true_values %>% kable()
 ```
 
-##
+## 
 
 ```{r}
 library(googlesheets4)
@@ -266,14 +264,8 @@ ggplot(bias_values, aes(x = name, y = value)) +
   theme(text = element_text(size = 17))
 ```
 
-
-
 ## Types of data
 
-- Quantitative: numbers that measure units, e.g. years, kg, etc. Differences between numbers have meaning
-- Ordinal: numbers or categories that have natural order, e.g. Likert scales, tumor stage. Distances between numbers do not have consistent meaning ('Almost always' - 'Sometimes' = ?)
-- Nominal: Categories that have no inherent order, e.g. US states
-
-
-
-
+-   Quantitative: numbers that measure units, e.g. years, kg, etc. Differences between numbers have meaning
+-   Ordinal: numbers or categories that have natural order, e.g. Likert scales, tumor stage. Distances between numbers do not have consistent meaning ('Almost always' - 'Sometimes' = ?)
+-   Nominal: Categories that have no inherent order, e.g. US states
