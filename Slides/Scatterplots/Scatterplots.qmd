@@ -7,9 +7,10 @@ format:
     smaller: true
     scrollable: true
     theme: serif
-editor: visual
-preview:
-  application: "open -a Preview" # Adjust for your preferred app
+    self-contained: true
+    footer: "[Course Home Page](https://psboonstra.github.io/PH345_W2025/)"
+editor: source
+engine: knitr
 ---
 
 ## Edward R Tufte

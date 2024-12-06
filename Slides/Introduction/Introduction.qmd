@@ -7,9 +7,10 @@ format:
     smaller: true
     scrollable: true
     theme: serif
+    self-contained: true
+    footer: "[Course Home Page](https://psboonstra.github.io/PH345_W2025/)"
 editor: source
-preview:
-  application: "open -a Preview" # Adjust for your preferred app
+engine: knitr
 ---
 
 ## Case Study 1

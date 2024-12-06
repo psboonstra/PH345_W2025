@@ -9,18 +9,11 @@ format:
     theme: serif
     self-contained: true
     footer: "[Course Home Page](https://psboonstra.github.io/PH345_W2025/)"
-editor: visual
+editor: source
 engine: knitr
-preview:
-  application: "open -a Preview" # Adjust for your preferred app
 ---
 
-<!-- {{< include "./_extensions/r-wasm/live/_knitr.qmd" >}} -->
-
 ```{r}
-#| label: setup
-#| echo: false
-#| include: false
 library(tidyverse)
 library(knitr)
 library(googlesheets4)
@@ -269,7 +262,7 @@ bias_values <-
   (class_responses %>% select(seq(2, 19, by = 2)) %>% rename_all(~c("1", "2", "3", "4", "5", "6", "7", "8", "9")) - 
      # stack multiple copies of true_values, matching number of rows of class_responses:
      bind_rows(true_values %>% slice(rep(1:n(), nrow(class_responses))))) %>%
-  pivot_longer(everything())
+  pivot_longer(everything()) 
 
 bias_ranks <- 
   # class estimates of ranks
@@ -279,11 +272,88 @@ bias_ranks <-
   pivot_longer(everything())
 
 
-ggplot(bias_values, aes(x = name, y = value)) + 
+ggplot(bias_values, aes(x = name, y = value, color = name)) + 
   geom_jitter(height = 0, width = 0.25, alpha = 0.8, size = 2) + 
-  labs(x = "Plot", y = "Bias") + 
+  labs(x = "Plot", y = "Bias") +
+  guides(color = "none") + 
   theme(text = element_text(size = 17))
 ```
+
+## Relative order of accuracy
+
+Take away: some aesthetics communicate data better than others
+
+![](fig14Mackinlay.png)
+
+::: {style="font-size: 75%;"}
+Figure 14 from Mackinlay (1986)
+:::
+
+## Example 1
+
+::::: columns
+::: {.column width="50%"}
+![](fig6aCleveland.png)
+:::
+
+
+::: {.column width="50%"}
+::: {.fragment}
+
+![](fig6bCleveland.png)
+:::
+:::
+:::::
+
+What is the rate of change of atmospheric CO2 over time? 
+
+::: {style="font-size: 75%;"}
+Figure 6 from Cleveland and McGill (1985)
+:::
+
+
+## Example 1
+
+::::: columns
+::: {.column width="50%"}
+![](fig1aWong2010.png)
+:::
+
+
+::: {.column width="50%"}
+What is the relative size of big vs small circle? 
+
+::: {.fragment}
+14x
+:::
+
+How does distance between lines vary?
+
+::: {.fragment}
+it's constant
+:::
+
+:::
+
+
+
+:::::
+
+
+::: {style="font-size: 75%;"}
+Figure 1c from Wong (2010a)
+:::
+
+## Example 2
+
+![](fig1cWong2010.png)
+
+> Different visual variables encoding the same five values.
+
+::: {style="font-size: 75%;"}
+Figure 1c from Wong (2010a)
+:::
+
 
 ## Types of data
 
@@ -291,3 +361,37 @@ ggplot(bias_values, aes(x = name, y = value)) +
 -   Ordinal: numbers or categories that have natural order, e.g. Likert scales, tumor stage. Distances between numbers do not have consistent meaning ('Almost always' - 'Sometimes' = ?)
 -   Nominal: Categories that have no inherent order, e.g. US states
 
+## Aesthetics for different types of data
+
+
+![](fig15Mackinlay.png)
+
+::: {style="font-size: 75%;"}
+Figure 15 from Mackinlay (1986)
+:::   
+
+## Example 3
+
+
+![](fig2bWong2010.png)
+
+> Lines in graphs create clear connection. Enclosure is an effective way to draw attention to a group of objects.
+
+::: {style="font-size: 75%;"}
+Figure 2b from Wong (2010b)
+:::
+
+
+
+
+## References
+
+Cleveland, W.S. and McGill, R., 1985. *Graphical perception and graphical methods for analyzing scientific data.* Science, 229(4716), pp.828-833.
+
+Mackinlay, J., 1986. *Automating the design of graphical presentations of relational information.* Acm Transactions On Graphics (Tog), 5(2), pp.110-141.
+
+Wehrli, U., 2003. Tidying Up Art. Prestel Publishing.
+
+Wong, B., 2010a. *Design of data figures*. Nature Methods, 7(9), pp.665-666.
+
+Wong, B., 2010b. *Points of view: Gestalt principles (Part 1)*. Nature Methods, 7(11), p.863.
