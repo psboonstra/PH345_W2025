@@ -1,7 +1,3 @@
----
-site_name: ""
----
-
 
 ## Public Health 345, Winter 2025
 
