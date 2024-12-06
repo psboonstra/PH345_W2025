@@ -1,3 +1,8 @@
+---
+site_name: ""
+---
+
+
 ## Public Health 345, Winter 2025
 
 Week 1: Introduction
