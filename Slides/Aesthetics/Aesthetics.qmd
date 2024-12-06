@@ -3,7 +3,10 @@ title: "Aesthetics (encodings)"
 author: "Phil Boonstra"
 subtitle: "PH345: Winter 2025"
 format: 
-  live-revealjs:
+  revealjs:
+    smaller: true
+    scrollable: true
+    theme: serif
     self-contained: true
 editor: visual
 engine: knitr
@@ -11,9 +14,7 @@ preview:
   application: "open -a Preview" # Adjust for your preferred app
 ---
 
-<!-- {{< include ../../_extensions/r-wasm/live/_knitr.qmd >}} -->
-
-{{< include "./_extensions/r-wasm/live/_knitr.qmd" >}}
+<!-- {{< include "./_extensions/r-wasm/live/_knitr.qmd" >}} -->
 
 ```{r, message = FALSE}
 def.chunk.hook  <- knitr::knit_hooks$get("chunk")
@@ -23,6 +24,9 @@ knitr::knit_hooks$set(chunk = function(x, options) {
 })
 library(tidyverse)
 library(knitr)
+library(googlesheets4)
+library(cowplot)
+
 ```
 
 ## *Farbtafel*, Paul Klee (1930)
@@ -53,7 +57,12 @@ Choice of aesthetics helps or hinders your audience's understanding of what the 
 
 ## Example: five proportions
 
-One number for each of five groups (A-E)
+One proportion for each of five groups (A-E)
+
+For each of 9 plots, guess group B's numerical proportion and rank. Enter your guesses on this google form:
+
+![](frame.png)
+
 
 ## Plot 1
 
@@ -207,15 +216,6 @@ p9 <- ggplot(data9) +
 p9
 ```
 
-## 
-
-```{r, fig.height = 8}
-
-library(cowplot)
-plot_grid(p1, p2, p3, p4, p5, p6, p7, p8, p9, labels = 1:9)
-
-```
-
 ## True values
 
 ```{r}
@@ -234,14 +234,35 @@ all_Bs <-
 
 true_values <- all_Bs %>% pivot_wider(id_cols = group, names_from = dataset, values_from = value) %>% select(-group)
 true_ranks <- all_Bs %>% pivot_wider(id_cols = group, names_from = dataset, values_from = rank) %>% select(-group)
-true_values %>% kable()
-true_values %>% kable()
+
 ```
+
+
+::::: columns
+::: {.column width="70%"}
+```{r, fig.height = 8}
+plot_grid(p1, p2, p3, p4, p5, p6, p7, p8, p9, labels = 1:9)
+```
+
+:::
+
+::: {.column width="30%"}
+```{r}
+all_Bs %>%
+  select(`Plot` = dataset, 
+         `True value B` = value, 
+         `True rank B` = rank) %>% kable(digits = 3)
+```
+:::
+:::::
+
+
 
 ## 
 
 ```{r}
-library(googlesheets4)
+#| echo: false
+#| include: true
 gs4_deauth()
 class_responses <- read_sheet("https://docs.google.com/spreadsheets/d/1wxvkwo3-gsBvF4VK6aOu8RaXcpCSmJmBjEvyr1Yo6jc/edit?resourcekey=#gid=673516564")
 
@@ -272,10 +293,3 @@ ggplot(bias_values, aes(x = name, y = value)) +
 -   Ordinal: numbers or categories that have natural order, e.g. Likert scales, tumor stage. Distances between numbers do not have consistent meaning ('Almost always' - 'Sometimes' = ?)
 -   Nominal: Categories that have no inherent order, e.g. US states
 
-## 
-
-```{webr}
-for (x in 1:5) {
-  print(x ** 2)
-}
-```

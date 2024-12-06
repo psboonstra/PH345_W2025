@@ -7,7 +7,7 @@ format:
     smaller: true
     scrollable: true
     theme: serif
-editor: visual
+editor: source
 preview:
   application: "open -a Preview" # Adjust for your preferred app
 ---
@@ -209,7 +209,8 @@ preview:
 :::
 :::::
 
-## Case study 3: Dr. John Snow’s map 
+## Case study 3: Dr. John Snow’s map
+
 ### (Gilbert, 1958)
 
 ![](JohnSnowPump.png){width="60%"}
