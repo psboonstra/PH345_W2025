@@ -1,7 +1,6 @@
 
-## Public Health 345, Winter 2025
+This is a github repository for slides for Public Health 345: Data Visualization in R
 
-Week 1: Introduction
+The home page for these slides is here:
 
-Week 2: [Aesthetics](https://psboonstra.github.io/PH345_W2025/Slides/Aesthetics/Aesthetics.html#/title-slide)
-
+<psboonstra.github.io/PH345_W2025/>

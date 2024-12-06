@@ -8,6 +8,7 @@ format:
     scrollable: true
     theme: serif
     self-contained: true
+    footer: "[Course Home Page](https://psboonstra.github.io/PH345_W2025/)"
 editor: visual
 engine: knitr
 preview:
@@ -16,17 +17,14 @@ preview:
 
 <!-- {{< include "./_extensions/r-wasm/live/_knitr.qmd" >}} -->
 
-```{r, message = FALSE}
-def.chunk.hook  <- knitr::knit_hooks$get("chunk")
-knitr::knit_hooks$set(chunk = function(x, options) {
-  x <- def.chunk.hook(x, options)
-  ifelse(options$size != "normalsize", paste0("\n \\", options$size,"\n\n", x, "\n\n \\normalsize"), x)
-})
+```{r}
+#| label: setup
+#| echo: false
+#| include: false
 library(tidyverse)
 library(knitr)
 library(googlesheets4)
 library(cowplot)
-
 ```
 
 ## *Farbtafel*, Paul Klee (1930)
@@ -36,7 +34,7 @@ library(cowplot)
 Which color appears most often?
 
 ::: {style="font-size: 75%;"}
-https://www.demilked.com/tidying-up-art-ursus-wehrli/
+<https://www.demilked.com/tidying-up-art-ursus-wehrli/>
 :::
 
 ## Tidied up *Farbtafel*, Ursus Wehrli (2003)
@@ -46,7 +44,7 @@ https://www.demilked.com/tidying-up-art-ursus-wehrli/
 Which color appears most often?
 
 ::: {style="font-size: 75%;"}
-https://www.demilked.com/tidying-up-art-ursus-wehrli/
+<https://www.demilked.com/tidying-up-art-ursus-wehrli/>
 :::
 
 ## Mapping data to aesthetics
