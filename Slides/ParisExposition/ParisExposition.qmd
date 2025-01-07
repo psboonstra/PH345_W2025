@@ -276,9 +276,7 @@ use of color
 
 :::
 
-## To do:
-
-(wrap into )
+## (more to do yet)
 
 
 ## References
