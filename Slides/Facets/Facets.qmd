@@ -1,0 +1,203 @@
+---
+title: "Facets"
+author: "Phil Boonstra"
+subtitle: "PH345: Winter 2025"
+format: 
+  revealjs:
+    smaller: true
+    scrollable: true
+    theme: serif
+    self-contained: true
+    slide-number: c/t
+    footer: "[Course Home Page](https://psboonstra.github.io/PH345_W2025/)"
+editor: source
+engine: knitr
+---
+
+```{r}
+library(datasauRus)
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+# See here:https://arelbundock.com/posts/quarto_figures/index.html
+knitr::opts_chunk$set(
+  out.width = "70%", # enough room to breath
+  fig.width = 6,     # reasonable size
+  fig.asp = 0.618,   # golden ratio
+  fig.align = "center" # mostly what I want
+)
+out2fig = function(out.width, out.width.default = 0.7, fig.width.default = 6) {
+  fig.width.default * out.width / out.width.default 
+}
+```
+
+
+## Horse in Motion
+
+![](The_Horse_in_Motion.jpg){width=100%}
+
+Is there a moment where a galloping horse has all hooves off the ground?
+
+::: {style="font-size: 75%;"}
+Eadweard Muybridge, 1878. Public Domain
+:::
+
+## Chromosomes
+
+![](fig2YunisPrakash){width=140%}
+
+> Schematic representation of late-prophase chromosomes (1000-band stage) of man, chimpanzee, gorilla, and orangutan, arranged from left
+to right, respectively, to better visualize homology between the chromosomes of the great apes and the human complement.
+
+::: {style="font-size: 75%;"}
+Figure 2, Yunis and Prakash (1982)
+:::
+
+## What is this called?
+
+> [S]lice the data into parts according to one or more data dimensions, visualize each data slice separately, and then arrange the individual visualizations into a grid (Ch21, Wilke, 2019).
+
+Called 'small multiples' (Tufte, 1991), 'trellis plots' (Becker et al., 1996), or 'facet plots' (Wickham, 2016). 
+
+## Why do this?
+
+Introduces a third dimension (first two dimensions being x and y). Essentially another aesthetic. 
+
+Tufte's principles of graphical excellence:
+
+  - *Present many numbers in small space*
+
+  - *Make large data sets coherent*
+  
+  
+## What are guidelines?
+
+Use when you want to focus audience attention on how differences 
+
+Faceting variable must be categorical
+
+Each mini-plot should (normally) have same structure: common axes, scales, etc
+
+## Hadley Wickham (1979-)
+
+::::: columns
+::: {.column width="50%"}
+New Zealand statistician, Chief Scientist at Posit PBC
+
+Creator of `ggplot2` and the `tidyverse`
+
+John Chambers Award for Statistical Computing (2006); Fellow of ASA (2015); COPSS Presidents' Award (2019)
+
+:::
+
+::: {.column width="50%"}
+![](hadley.jpg){width=60%}
+
+::: {style="font-size: 75%;"}
+<https://hadley.nz/>
+:::
+
+:::
+:::::
+
+## Two flavors of faceting in `ggplot2`
+
+1. `facet_wrap()`: wrap a 1D ribbon of plots into 2D grid
+2. `facet_grid()`: create a 2D grid of plots
+
+See Chapter 16 of `ggplot2` book (<https://ggplot2-book.org/facet>)
+
+
+## We've already seen `facet_wrap()`
+
+::: panel-tabset
+### Plot
+
+```{r}
+#| fig-asp: 0.7
+#| out-width: 130%
+#| fig-width: 11.14286
+#| label: datasaurus
+# Install and load datasauRus if not already installed
+if(!require(datasauRus)) {install.packages("datasauRus");library(datasauRus)}
+ggplot(datasaurus_dozen) +
+  geom_point(aes(x = x, y = y), size = 1) + 
+  facet_wrap(vars(dataset), ncol = 5) +
+  guides(color = "none") +
+  theme(text = element_text(size = 20)) 
+```
+
+### Code
+
+```{r}
+#| label: datasaurus
+#| echo: true
+#| eval: false
+```
+:::
+
+
+## `facet_grid()` doesn't 'work' here
+
+::: panel-tabset
+### Plot
+
+```{r}
+#| fig-asp: 0.7
+#| out-width: 130%
+#| fig-width: 11.14286
+#| label: datasaurus2
+# Install and load datasauRus if not already installed
+if(!require(datasauRus)) {install.packages("datasauRus");library(datasauRus)}
+ggplot(datasaurus_dozen) +
+  geom_point(aes(x = x, y = y), size = 1) + 
+  facet_grid(vars(dataset)) +
+  guides(color = "none") +
+  theme(text = element_text(size = 20)) 
+```
+
+### Code
+
+```{r}
+#| label: datasaurus2
+#| echo: true
+#| eval: false
+```
+:::
+
+
+## Unemployment in USA
+
+![](unemployment_usa.png){width=100%}
+
+::: {style="font-size: 75%;"}
+Jorge Camoes, <https://excelcharts.com/charts-monthly-unemployment-rates-by-state-1976-2009/>
+:::
+
+:::{.speaker-notes}
+Wrapped facet by US States, ordered by size of workforce. Easy to compare trends across states. Unemployment band provides anchors
+:::
+
+## Life expectancy in USA
+
+![](lifeexpectancy538b.png){width=120%}
+
+::: {style="font-size: 75%;"}
+Anna Maria Barry-Jester, <https://fivethirtyeight.com/features/as-u-s-life-expectancies-climb-people-in-a-few-places-are-dying-younger/>
+:::
+
+:::{.speaker-notes}
+Sort of a facet grid by categorized latitude and longtitude. The trend line provides an anchor. The amount of purple and orange allow to immediately determine 
+:::
+
+## References
+
+Becker, R.A., Cleveland, W.S. and Shyu, M.J., 1996. *The visual design and control of trellis display*. Journal of computational and Graphical Statistics, 5(2), pp.123-155.
+
+Tufte, E.R., 1991. Envisioning information. Optometry and Vision Science, 68(4), pp.322-324.
+
+Wickham H (2016). ggplot2: Elegant Graphics for Data Analysis. Springer-Verlag New York. ISBN 978-3-319-24277-4, https://ggplot2.tidyverse.org.
+
+Wilke, C.O., 2019. Fundamentals of data visualization: a primer on making informative and compelling figures. O'Reilly Media.
+
+Yunis, J.J. and Prakash, O., 1982. *The origin of man: a chromosomal pictorial legacy.* Science, 215(4539), pp.1525-1530.

@@ -8,6 +8,7 @@ format:
     scrollable: true
     theme: serif
     self-contained: true
+    slide-number: c/t
     footer: "[Course Home Page](https://psboonstra.github.io/PH345_W2025/)"
 editor: source
 engine: knitr
@@ -18,6 +19,17 @@ library(tidyverse)
 library(knitr)
 library(googlesheets4)
 library(cowplot)
+library(ggrepel)
+# See here:https://arelbundock.com/posts/quarto_figures/index.html
+knitr::opts_chunk$set(
+  out.width = "70%", # enough room to breath
+  fig.width = 6,     # reasonable size
+  fig.asp = 0.618,   # golden ratio
+  fig.align = "center" # mostly what I want
+)
+out2fig = function(out.width, out.width.default = 0.7, fig.width.default = 6) {
+  fig.width.default * out.width / out.width.default 
+}
 ```
 
 ## *Farbtafel*, Paul Klee (1930)
@@ -289,7 +301,43 @@ Take away: some aesthetics communicate data better than others
 Figure 14 from Mackinlay (1986)
 :::
 
+## Bang Wong
+
+
+::::: columns
+::: {.column width="50%"}
+
+Sr. Director at Vertex Pharmaceuticals. 
+
+Formerly Creative Director of the Broad Institute of MIT and adjunct assistant professor  in the Department of Art as Applied to Medicine at Hopkins
+
+Published monthly column on data visualization in *Nature Methods* journal from 2010-2012
+
+:::
+
+::: {.column width="50%"}
+![](wong.jpg){width=60%}
+
+::: {style="font-size: 75%;"}
+<https://www.linkedin.com/in/bangwong/>
+:::
+
+:::
+:::::
+
+
 ## Example 1
+
+![](fig1cWong2010.png)
+
+> Different visual variables encoding the same five values.
+
+::: {style="font-size: 75%;"}
+Figure 1c from Wong (2010a)
+:::
+
+
+## Example 2
 
 ::::: columns
 ::: {.column width="50%"}
@@ -312,7 +360,7 @@ Figure 6 from Cleveland and McGill (1985)
 :::
 
 
-## Example 1
+## Example 3
 
 ::::: columns
 ::: {.column width="50%"}
@@ -336,19 +384,7 @@ it's constant
 :::
 
 
-
 :::::
-
-
-::: {style="font-size: 75%;"}
-Figure 1c from Wong (2010a)
-:::
-
-## Example 2
-
-![](fig1cWong2010.png)
-
-> Different visual variables encoding the same five values.
 
 ::: {style="font-size: 75%;"}
 Figure 1c from Wong (2010a)
@@ -370,8 +406,7 @@ Figure 1c from Wong (2010a)
 Figure 15 from Mackinlay (1986)
 :::   
 
-## Example 3
-
+## Example 4
 
 ![](fig2bWong2010.png)
 
@@ -381,6 +416,15 @@ Figure 15 from Mackinlay (1986)
 Figure 2b from Wong (2010b)
 :::
 
+## Example 5
+
+![](Fig42Wilke.png){height=150%}
+
+What regions of the US experienced greatest population growth?
+
+::: {style="font-size: 75%;"}
+Figure 4.2, Wilke (2019)
+:::
 
 
 
@@ -391,6 +435,8 @@ Cleveland, W.S. and McGill, R., 1985. *Graphical perception and graphical method
 Mackinlay, J., 1986. *Automating the design of graphical presentations of relational information.* Acm Transactions On Graphics (Tog), 5(2), pp.110-141.
 
 Wehrli, U., 2003. Tidying Up Art. Prestel Publishing.
+
+Wilke, C.O., 2019. Fundamentals of data visualization: a primer on making informative and compelling figures. O'Reilly Media.
 
 Wong, B., 2010a. *Design of data figures*. Nature Methods, 7(9), pp.665-666.
 

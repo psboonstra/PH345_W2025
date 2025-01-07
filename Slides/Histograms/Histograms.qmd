@@ -7,23 +7,33 @@ format:
     smaller: true
     scrollable: true
     theme: serif
-editor: visual
-preview:
-  application: "open -a Preview" # Adjust for your preferred app
+    self-contained: true
+    slide-number: c/t
+    footer: "[Course Home Page](https://psboonstra.github.io/PH345_W2025/)"
+editor: source
+engine: knitr
 ---
 
-```{r, message = FALSE}
-def.chunk.hook  <- knitr::knit_hooks$get("chunk")
-knitr::knit_hooks$set(chunk = function(x, options) {
-  x <- def.chunk.hook(x, options)
-  ifelse(options$size != "normalsize", paste0("\n \\", options$size,"\n\n", x, "\n\n \\normalsize"), x)
-})
-
+```{r}
 library(datasauRus)
 library(tidyverse)
 library(knitr)
 library(kableExtra)
 library(cowplot)
+# See here:https://arelbundock.com/posts/quarto_figures/index.html
+knitr::opts_chunk$set(
+  out.width = "70%", # enough room to breath
+  fig.width = 6,     # reasonable size
+  fig.asp = 0.618,   # golden ratio
+  fig.align = "center" # mostly what I want
+)
+out2fig = function(out.width, out.width.default = 0.7, fig.width.default = 6) {
+  fig.width.default * out.width / out.width.default 
+}
+```
+
+
+```{r}
 load("ultrarunning.RData")
 ultrarunning <- 
   ultrarunning %>%
@@ -34,6 +44,7 @@ ultrarunning <-
   group_by(pb100k_dec_cat) %>%
   mutate(height = row_number() - 0.5) %>%
   mutate(pb100k_dec_char = formatC(pb100k_dec, format = "f", digits = 1)) %>%
+  ungroup() %>%
   arrange(original_order)
 ```
 
@@ -41,7 +52,11 @@ ultrarunning <-
 
 ::::: columns
 ::: {.column width="30%"}
-Univariate plots are used to visualize the distribution of a single variable.
+Univariate plots are used to visualize the distribution of a single variable:
+
+  * What are the typical values?
+  * What is the spread?
+  * Are there 'outliers'?
 :::
 
 ::: {.column width="70%"}
@@ -53,7 +68,9 @@ Univariate plots are used to visualize the distribution of a single variable.
 
 -   Histograms
 -   Boxplots
+-   Density plots
 -   Barplots
+-   Violin plots
 
 ## Ultra-runner data (Samtleben, 2023)
 
@@ -61,56 +78,59 @@ $n = 288$ ultra-runners (completing 100km ultra-marathons)
 
 Each runner's personal best (in hours):
 
-```{r,  size = "tiny"}
+```{r}
+#| size: tiny
 ultrarunning$pb100k_dec
 ```
 
-::: aside
+::: {style="font-size: 75%;"}
 <https://causeweb.org/tshs/ultra-running/>
 :::
 
 ## Creating a histogram
 
-1.  Choose a bin size and a center value, e.g. one hour bins centered at the integers would be denoted as $(5.5, 6.5]$, $(6.5, 7.5]$, $(7.5, 8.5]$, etc. Bins must be non-overlapping, and there should be enough bins to completely cover the data.
+Appropriate for summarizing a set of numbers (continous variables)
 
-2.  Assign each runner to a bin, e.g. 12.98 goes into the $(12, 13]$ bin and 12.0 goes in to the $(11, 12]$ bin
+1.  Choose a bin size and a center value, e.g. one hour bins centered at the integers would be denoted as $(5.5, 6.5]$, $(6.5, 7.5]$, $(7.5, 8.5]$, etc. Bins must be non-overlapping. Calculate enough bins to completely cover data
+
+2.  Assign each runner to a bin, e.g. 13.50 goes into the $(12.5, 13.5]$ bin and 13.51 goes in to the $(13.5, 14.5]$ bin
 
 3.  Plot bars for each bin, with the height of the bar corresponding to the number of runners in that bin
 
 ## 
 
 ```{r}
+#| out-width: 130%
+#| fig-width: 11.14286
 ggplot(ultrarunning) +
-  geom_text(aes(x = pb100k_dec_cat_label, y = height, label = pb100k_dec_char), size = 2) + 
-  scale_x_continuous(limits = c(5.5, 26), expand = expansion(0.02)) +
-  scale_y_continuous(limits = c(0, 46), expand = expansion(0.02)) +  
-  labs(x = "Personal best time (hours)",
-       y = "Count") +
+  geom_text(aes(x = pb100k_dec_cat_label, y = height, label = pb100k_dec_char), size = 2.5) + 
+  scale_x_continuous(name = "Personal best time (hours)", limits = c(5.5, 26), expand = expansion(0.02)) +
+  scale_y_continuous(name = "Count", limits = c(0, 46), expand = expansion(0.02)) +  
   theme(text = element_text(size = 24))
 ```
 
 ## 
 
 ```{r}
+#| out-width: 130%
+#| fig-width: 11.14286
 ggplot(ultrarunning) + 
   geom_histogram(aes(x = pb100k_dec), binwidth = 1, center = 10, fill = "white", color = "black") + 
-  geom_text(aes(x = pb100k_dec_cat_label, y = height, label = pb100k_dec_char), size = 2) + 
-  scale_x_continuous(limits = c(5.5, 26), expand = expansion(0.02)) +
-  scale_y_continuous(limits = c(0, 46), expand = expansion(0.02)) +  
-  labs(x = "Personal best time (hours)",
-       y = "Count") +
+  geom_text(aes(x = pb100k_dec_cat_label, y = height, label = pb100k_dec_char), size = 2.5) + 
+  scale_x_continuous(name = "Personal best time (hours)", limits = c(5.5, 26), expand = expansion(0.02)) +
+  scale_y_continuous(name = "Count", limits = c(0, 46), expand = expansion(0.02)) +  
   theme(text = element_text(size = 24))
 ```
 
 ## 
 
 ```{r}
+#| out-width: 130%
+#| fig-width: 11.14286
 ggplot(ultrarunning) + 
   geom_histogram(aes(x = pb100k_dec), binwidth = 1, center = 10, fill = "white", color = "black") + 
-  scale_x_continuous(limits = c(5.5, 26), expand = expansion(0.02)) +
-  scale_y_continuous(limits = c(0, 46), expand = expansion(0.02)) +  
-  labs(x = "Personal best time (hours)",
-       y = "Count") +
+  scale_x_continuous(name = "Personal best time (hours)", limits = c(5.5, 26), expand = expansion(0.02)) +
+  scale_y_continuous(name = "Count", limits = c(0, 46), expand = expansion(0.02)) +  
   theme(text = element_text(size = 24))
 ```
 
@@ -120,6 +140,9 @@ ggplot(ultrarunning) +
 ### Plot
 
 ```{r}
+#| out-width: 130%
+#| fig-width: 11.14286
+#| label: histogram
 ggplot(ultrarunning) + 
   geom_histogram(aes(x = pb100k_dec), binwidth = 1, center = 10, fill = "grey", color = "black") + 
   labs(x = "Personal best time (hours)",
@@ -129,18 +152,18 @@ ggplot(ultrarunning) +
 
 ### Code
 
-```{r, echo = TRUE, eval = FALSE}
-ggplot(ultrarunning) + 
-  geom_histogram(aes(x = pb100k_dec), binwidth = 1, center = 10, fill = "grey", color = "black") + 
-  labs(x = "Personal best time (hours)",
-       y = "Count") +
-  theme(text = element_text(size = 24))
+```{r}
+#| label: histogram
+#| echo: true
+#| eval: false
 ```
 :::
 
 ## Bin width of 10 hours -- too large
 
 ```{r}
+#| out-width: 130%
+#| fig-width: 11.14286
 ggplot(ultrarunning) + 
   geom_histogram(aes(x = pb100k_dec), binwidth = 10, fill = "grey", color = "black") + 
   scale_x_continuous(expand = expansion(0.02)) +
@@ -152,6 +175,8 @@ ggplot(ultrarunning) +
 ## Bin width of 3 minutes -- too small
 
 ```{r}
+#| out-width: 130%
+#| fig-width: 11.14286
 ggplot(ultrarunning) + 
   geom_histogram(aes(x = pb100k_dec), binwidth = 0.05, fill = "grey", color = "black") + 
   scale_x_continuous(expand = expansion(0.02)) +
@@ -160,19 +185,121 @@ ggplot(ultrarunning) +
   theme(text = element_text(size = 24))
 ```
 
-## Boxplots
+## Density plot
 
-Find the five-number summary: minimum, lower quartile, median, upper quartile, maximum
+- Alternative to summarizing continuous variable
+- Smoothed version of histogram (but amount of smoothing is adjustable)
+- $y$-axis is density: single connected line and area under the line equals 1
 
-```{r, echo = TRUE}
-quantile(ultrarunning$pb100k_dec)
+## Different amounts of smoothing 
+
+```{r}
+#| out-width: 130%
+#| fig-width: 11.14286
+ggplot(ultrarunning) + 
+  geom_density(aes(x = pb100k_dec, color = "Sensible")) +
+  geom_density(aes(x = pb100k_dec, color = "Too wiggly"), bw = 0.2) +
+  geom_density(aes(x = pb100k_dec, color = "Too smooth"), bw = 10) +
+  scale_x_continuous(expand = expansion(0.02)) +
+  coord_cartesian(ylim = c(0, 0.2)) + 
+  labs(
+    x = "Personal best time (hours)",
+    y = "Density", 
+    color = NULL) +
+  theme(text = element_text(size = 24))
 ```
 
-IQR = upper quartile - lower quartile
+## Comparison
+
+
+::::: columns
+
+::: {.column width="50%"}
+
+#### Histogram
+
+- More familiar to most readers
+- $y$-axis is counts by default (but technically these should be densities*)
+- Requires choosing binwidth
+:::
+
+::: {.column width="50%"}
+#### Density plot
+
+- Less familiar to readers
+- $y$-axis is density
+- Algorithms to choose appropriate amount of smoothness
+:::
+
+::::: 
+
+Generally no reason not to show both. 
+
+
+::: {style="font-size: 75%;"}
+*Density $\neq$ probability (but you can think of it as relative probability)
+:::
+
 
 ## 
 
 ```{r}
+#| out-width: 130%
+#| fig-width: 11.14286
+ggplot(ultrarunning) + 
+  geom_histogram(aes(x = pb100k_dec, y = after_stat(density)), binwidth = 1, center = 10, fill = "grey", color = "black") + 
+  geom_density(aes(x = pb100k_dec)) +
+  labs(x = "Personal best time (hours)",
+       y = "Count") +
+  theme(text = element_text(size = 24))
+```
+
+
+## Mary E Spear
+
+::::: columns
+::: {.column width="50%"}
+American graphic analyst for the US government for more than 30 years
+
+Author of Charting Statistics (1952) and Practical Charting Techniques (1969)
+
+Inventor of the 'range bar' (boxplot)
+:::
+
+::: {.column width="50%"}
+![](Mary_Eleanor_Hunt_Spear_died_1986)
+:::
+:::::
+
+::: {style="font-size: 75%;"}
+Fair use, <https://en.wikipedia.org/wiki/File:Mary_Eleanor_Hunt_Spear_died_1986.png>
+:::
+
+## 
+
+![](rangeplot.png)
+
+::: {style="font-size: 75%;"}
+Figure 7-28, Spear (1969)
+:::
+
+Interquartile Range = segment from first quartile to third quartile
+
+## Boxplots
+
+Sometimes called box-and-whisker plots
+
+1. Calculate the five-number summary: minimum, lower quartile, median, upper quartile, maximum
+2. Draw a box from lower quartile to upper quartile and line at median (box)
+3. Draw line segments extending from the edge of box to $1.5\times$ IQR in either direction (whiskers)
+4. Any points outside of these segments are plotted directly (outliers)
+
+
+## "Jittered" points
+
+```{r}
+#| out-width: 130%
+#| fig-width: 11.14286
 foo <- 
   quantile(ultrarunning$pb100k_dec) %>%
   enframe(value = "pb100k_dec")
@@ -188,128 +315,196 @@ foo2 <-
   )
 p1 <- 
   ggplot(ultrarunning) +
-  geom_point(aes(x = pb100k_dec, y = 1), position = position_jitter(width = 0, height = 0.25, seed = 1)) + 
-  scale_y_continuous(breaks = NULL, name = NULL, limits = c(0, 2)) +
+  geom_point(aes(x = pb100k_dec, y = 0), position = position_jitter(width = 0, height = 0.25, seed = 1)) + 
+  scale_y_continuous(breaks = NULL, name = NULL, limits = c(-1, 1)) +
   labs(x = "Personal best time (hours)") +
   theme(text = element_text(size = 24))
 p1
 ```
 
-## 
+## Five-number summary
 
 ```{r}
+#| out-width: 130%
+#| fig-width: 11.14286
 p1 +   
-  geom_segment(data = foo, aes(x = pb100k_dec, xend = pb100k_dec, y = 0.5, yend = 1.5), color = "black")
+  geom_segment(data = foo, aes(x = pb100k_dec, xend = pb100k_dec, y = -0.5, yend = 0.5), color = "black")
 ```
 
-## 
+## Whiskers
 
 ```{r}
+#| out-width: 130%
+#| fig-width: 11.14286
 p1 +   
-  geom_segment(data = foo, aes(x = pb100k_dec, xend = pb100k_dec, y = 0.5, yend = 1.5), color = "black") +
-  geom_segment(data = foo2, aes(x = start, xend = end, y = 1, yend = 1), color = "black")
+  geom_segment(data = foo, aes(x = pb100k_dec, xend = pb100k_dec, y = -0.5, yend = 0.5), color = "black") +
+  geom_segment(data = foo2, aes(x = start, xend = end, y = 0, yend = 0), color = "black")
 ```
 
-## 
+## Enclose the box
 
 ```{r}
+#| out-width: 130%
+#| fig-width: 11.14286
 p1 +   
-  geom_boxplot(aes(x = pb100k_dec, y = 1), fill = "#00000000", outlier.shape = NA)
+  geom_boxplot(aes(x = pb100k_dec), fill = "#00000000", outlier.shape = NA)
 ```
 
-## 
+## Typical boxplot
 
 ::: panel-tabset
 ### Plot
 
 ```{r}
+#| label: boxplot
+#| out-width: 130%
+#| fig-width: 11.14286
 ggplot(ultrarunning) +
-  geom_boxplot(aes(x = pb100k_dec, y = 1)) +
+  geom_boxplot(aes(x = pb100k_dec)) +
   labs(x = "Personal best time (hours)") +
   theme(text = element_text(size = 24)) +
-  scale_y_continuous(breaks = NULL, name = NULL, limits = c(0, 2)) +
+  scale_y_continuous(breaks = NULL, name = NULL, limits = c(-1, 1)) +
   theme(text = element_text(size = 24))
 ```
 
 ### Code
 
-```{r, echo = TRUE, eval = FALSE}
+```{r}
+#| label: boxplot
+#| echo: true
+#| eval: false
+```
+:::
+
+## Useful to include individual points
+
+```{r}
+#| label: boxplot2
+#| out-width: 130%
+#| fig-width: 11.14286
 ggplot(ultrarunning) +
-  geom_boxplot(aes(x = pb100k_dec, y = 1)) +
-  labs(x = "Personal best time (hours)") +
-  theme(text = element_text(size = 24)) +
-  scale_y_continuous(breaks = NULL, name = NULL, limits = c(0, 2)) +
+  geom_boxplot(aes(x = pb100k_dec), outlier.shape = NA) + # <1>
+  geom_jitter(aes(x = pb100k_dec, y = 0), width = 0, height = 0.25) + # <2>
+  scale_x_continuous(name = "Personal best time (hours)") +
+  scale_y_continuous(breaks = NULL, name = NULL, limits = c(-1, 1)) +
   theme(text = element_text(size = 24))
 ```
-:::
 
-## Example: Hodgkin Lymphoma
+Random vertical jitter allows to see multiple datapoints with same value
 
--   Cancer of the lymphatic system
--   Occurs in most often in young adults (age 20-29) and elderly (75-84)
+## Violin plots
 
-## HL age of diagnosis in UK females
+More recent introduction is 'violin plot': density plot and its reflection
+
+
+```{=html}
+<iframe width="780" height="500" src="https://i.imgflip.com/9ebv55.jpg" title="Webpage example"></iframe>
+```
+
+Easy to create and show for multiple variables at once, like boxplots, but
+better provides more accurate representation of distribution, like density plot
+
+
+## Simple violin plot
 
 ```{r}
-foo <- read_csv("../../HodgkinsLymphoma/ukstatistics.csv")
-foo2 <- tibble(x = sample(foo$`Age Range`, size = 3e6, prob = foo$`Female Rates`, replace = TRUE)) %>%
-  mutate(age = str_extract(x, "\\d+") %>% as.numeric() + runif(n(), min = 0, max = 5)) 
+#| label: violin1
+#| out-width: 130%
+#| fig-width: 11.14286
+p1 <-
+  ggplot(ultrarunning, aes(x = pb100k_dec)) +
+  geom_violin(aes(y = 0), fill = "grey70") + 
+  scale_x_continuous(name = "Personal best time (hours)") +
+  scale_y_continuous(breaks = NULL, name = NULL, limits = c(-1, 1)) +
+  theme(text = element_text(size = 24))
+p1 +
+  geom_hline(yintercept = 0, linetype = "dashed")
 ```
+
+## With boxplot on top
 
 ```{r}
-p1 <- ggplot(foo2) + 
-  geom_histogram(aes(x = age), binwidth = 5, boundary = 20, fill = "white", color = "black") +
-  scale_x_continuous(limits = c(5, 95), expand = expansion(0.02)) +
-  scale_y_continuous(name = NULL, breaks = NULL) +
-  theme(text = element_text(size = 24))
-p2 <- ggplot(foo2) + 
-  geom_boxplot(aes(x = age, y = 1)) +
-  scale_x_continuous(limits = c(5, 95), expand = expansion(0.02)) +
-  scale_y_continuous(name = NULL, breaks = NULL, limits = c(0, 2)) +
-  theme(text = element_text(size = 24))
+#| label: violin2
+#| out-width: 130%
+#| fig-width: 11.14286
+p1 + 
+  geom_boxplot(width = 0.25)
 ```
 
-## 
+## With datapoints on top
 
-```{r, fig.height = 5}
-p2
+```{r}
+#| label: violin3
+#| out-width: 130%
+#| fig-width: 11.14286
+p1 + 
+  geom_jitter(aes(y = 0), height = 0.15)
 ```
 
-::: aside
-<https://www.cancerresearchuk.org/health-professional/cancer-statistics/statistics-by-cancer-type/hodgkin-lymphoma/incidence#heading-One>
+
+## Comparison
+
+::::: columns
+::: {.column width="50%"}
+#### Boxplot
+
+- One word
+- More familiar to readers
+- Clearly shows 1st, 2nd, and 3rd quartiles
+- Easy to draw by hand
+- Potentially misleading representation of distribution
 :::
 
-## 
+::: {.column width="50%"}
 
-```{r, fig.height = 6}
-plot_grid(p1, p2, nrow = 2, rel_heights = c(1, 0.7), align = "v")
-```
+#### Violin plot
 
-Potentially misleading conclusion when looking at boxplot alone
+- Two words
+- Less familiar to most readers
+- Doesn't show quartiles (but can be easily added)
+- Requires choosing binwidth (same as density plot)
+- More accurate representation of distribution
+:::
 
-Boxplots do not show multimodality
+::::: 
 
-## Barcharts
+Generally no reason not to show both
 
-```{r, echo = TRUE}
+## Bar Charts
+
+Univariate summaries of *categorical* variable
+
+Can show counts or proportions
+
+## Simple Bar Chart
+
+::: panel-tabset
+### Plot
+
+```{r}
+#| label: barchart
+#| out-width: 130%
+#| fig-width: 11.14286
+
 # Create a new variable to store the surface type
 ultrarunning <-
   ultrarunning %>%
-  mutate(pb_surface_name = 
+  mutate(sex_char = 
+           case_when(
+             sex == 2 ~ "Male",
+             sex == 1 ~ "Female", 
+             TRUE ~ "Unknown") %>%
+           factor() %>%
+           fct_relevel("Male", "Female", "Unknown"),
+         pb_surface_name = 
            case_when(
              pb_surface == 1 ~ "trail",
              pb_surface == 2 ~ "track",
              pb_surface == 3 ~ "road",
-             pb_surface == 4 ~ "mix of all three"
-           ))
-```
+             pb_surface == 4 ~ "mix of all three") %>%
+           factor() %>%
+           fct_relevel("trail", "road", "track"))
 
-## 
-
-::: panel-tabset
-### Plot
-
-```{r}
 ggplot(ultrarunning) +
   geom_bar(aes(x = pb_surface_name)) +
   labs(x = "Surface type",
@@ -319,20 +514,197 @@ ggplot(ultrarunning) +
 
 ### Code
 
-```{r, echo = TRUE, eval = FALSE}
-ggplot(ultrarunning) +
-  geom_bar(aes(x = pb_surface_name)) +
-  labs(x = "Surface type",
-       y = "Count") +
-  theme(text = element_text(size = 24))
-
+```{r}
+#| label: barchart
+#| echo: true
+#| eval: false
 ```
+
 :::
 
-## Comparison to histograms
+## Stacked Bar Chart
 
--   Barcharts are used for categorical data
+```{r}
+#| out-width: 130%
+#| fig-width: 11.14286
+ggplot(ultrarunning) +
+  geom_bar(aes(x = pb_surface_name, fill = sex_char)) +
+  labs(x = "Surface type",
+       y = "Count",
+       fill = "Sex") +
+  theme(text = element_text(size = 24))
+```
+
+## Filled Bar Chart
+
+```{r}
+#| out-width: 130%
+#| fig-width: 11.14286
+ggplot(ultrarunning) +
+  geom_bar(aes(x = pb_surface_name, fill = sex_char), position = "fill") +
+  labs(x = "Surface type",
+       y = "Count",
+       fill = "Sex") +
+  theme(text = element_text(size = 24))
+```
+
+## Dodged Bar Chart
+
+```{r}
+#| out-width: 130%
+#| fig-width: 11.14286
+ggplot(ultrarunning) +
+  geom_bar(aes(x = pb_surface_name, fill = sex_char), position = position_dodge(preserve = "single")) +
+  labs(x = "Surface type",
+       y = "Count",
+       fill = "Sex") +
+  theme(text = element_text(size = 24))
+```
+
+
+## Stacked vs. Filled vs. Dodged
+
+All are different flavors of bar charts
+
+::::: columns
+::: {.column width="33%"}
+#### Stacked
+
+- Emphasizes overall count differences between bars
+- Difficult to assess subgroup count differences between bars (except first subgroup)
+- Difficult to count small categories
+:::
+
+::: {.column width="33%"}
+
+#### Filled
+
+- Easy to assess overall proportional differences between bars for first and last subgroups
+- Difficult to assess subgroup proportional differences between bars in interior subgroups
+- No information on counts
+:::
+
+::: {.column width="33%"}
+
+#### Column plot
+
+- Emphasis on count differences between bars for each subgroup
+- Difficult to assess overall count differences between bars
+- Difficult to count small categories
+:::
+
+::::: 
+
+
+## Bars vs. Histograms vs. Columns
+
+::::: columns
+::: {.column width="33%"}
+#### Bar charts / Bar plots
+
+- Only appropriate for categorical variables
+- Bars are categories. Nothing exists between bins
+- Bars may be ordered by value or by count
+- $y$-axis can be counts or proportions
+- Use `geom_bar()`
+:::
+
+::: {.column width="33%"}
+
+#### Histogram
+
+- Only appropriate for continuous variables
+- Bins are intervals based on binwidth. No gap between bins
+- Bins are naturally ordered by value
+- $y$-axis can be counts or densities
+- Use `geom_histogram()`
+:::
+
+::: {.column width="33%"}
+
+#### Column plot
+
+- Special type of bivariate plot:
+  - $x$-axis is categorical
+  - $y$-axis is continuous
+  - Bars instead of points
+  - Bars drawn from $y$ to 0
+- Use `geom_col()`
+:::
+
+::::: 
+
+
+## Bivariate extensions
+
+```{r}
+#| out-width: 130%
+#| fig-width: 11.14286
+ggplot(ultrarunning %>% filter(sex_char != "Unknown"), aes(x = pb100k_dec, y = sex_char)) +
+  geom_violin(fill = "grey70") + 
+  geom_boxplot(width = 0.25) +
+  scale_x_continuous(name = "Personal best time (hours)") +
+  scale_y_discrete(name = NULL) + 
+  theme(text = element_text(size = 24))
+```
+
+
+## Bivariate extensions
+
+```{r}
+#| out-width: 130%
+#| fig-width: 11.14286
+ggplot(ultrarunning, aes(x = pb100k_dec, y = pb_surface_name)) +
+  geom_violin(fill = "grey70") + 
+  geom_boxplot(width = 0.25) +
+  scale_x_continuous(name = "Personal best time (hours)") +
+  scale_y_discrete(name = NULL) + 
+  theme(text = element_text(size = 24))
+```
+
+## Bivariate extensions
+
+```{r}
+#| out-width: 130%
+#| fig-width: 11.14286
+ggplot(ultrarunning, aes(x = pb_surface_name, y = pb100k_dec)) +
+  geom_violin(fill = "grey70") + 
+  geom_boxplot(width = 0.25) +
+  scale_y_continuous(name = "Personal best time (hours)") +
+  scale_x_discrete(name = NULL) + 
+  theme(text = element_text(size = 24))
+```
+
+
+## Layering in `ggplot`
+
+Adding multiple geometric objects to one ggplot object results in multiple layered views of the information. 
+
+Example of jittered points on top of boxplot:
+
+```{r}
+#| label: boxplot2
+#| echo: true
+#| eval: false
+#| size: small
+```
+
+1. First create boxplot
+2. Then add points across $y=0$ line with random vertical jitter
+
+Other examples of layering we've seen so far: layering density over histogram of running times (slide 15); data points over a boxplot (slide 24); boxplot over violin plot (slide 27)
+
+## When to layer?
+
+Some situations when you would want to layer:
+
+  - When single layer has critical weakness / deficiency (*Avoid distorting what the data say*)
+  - When you want to highlight both granular and aggregate components of the data (*Reveal the data at several levels of detail, from broad overview to fine structure*)
+  - To anchor your data (layer A) within context of reference / other data (layer B) (*Encourage comparison between different pieces of data*)
+
 
 ## References
 
-Samtleben, E. (2023) Ultrarunning dataset. Teaching of Statistics in the Health Sciences Resource Portal, Available at https://www.causeweb.org/tshs/ultra-running/.
+Samtleben, E., 2023. Ultrarunning dataset. Teaching of Statistics in the Health Sciences Resource Portal, Available at https://www.causeweb.org/tshs/ultra-running/.
+
+Spear, M.E., 1969. Practical charting techniques.

@@ -8,12 +8,62 @@ format:
     scrollable: true
     theme: serif
     self-contained: true
+    slide-number: c/t
     footer: "[Course Home Page](https://psboonstra.github.io/PH345_W2025/)"
 editor: source
 engine: knitr
 ---
 
-## Case Study 1
+## Course Introduction: Telling stories with data
+
+## Ex 1: Gapminder and Life Expectancy
+
+Chapter 2 of Unwin (2024)
+
+![](ch2gmg.png)
+
+> Gapminder identifies systematic misconceptions about important global trends and proportions and uses reliable data to develop easy to understand teaching materials to rid people of their misconceptions
+
+::: {style="font-size: 75%;"}
+<https://www.gapminder.org/about/>
+:::
+
+##
+
+![](fig21gmg.png){width="70%"}
+
+What do you see?
+
+:::{.speaker-notes}
+completely flat lines in 19th century; spikes in various places; lots of spikes in 1940s; increases after 1950
+:::
+
+##
+
+![](fig22agmg.png){width="70%"}
+
+##
+
+![](fig22bgmg.png){width="70%"}
+
+##
+
+![](fig23gmg.png){width="70%"}
+
+##
+
+![](fig25gmg.png){width="70%"}
+
+##
+
+![](fig26gmg.png){width="70%"}
+
+##
+
+![](fig29gmg.png){width="70%"}
+
+
+## Ex 2: Mapping COVID-19
 
 ![](Covid00.png)
 
@@ -145,72 +195,7 @@ engine: knitr
 :::
 :::::
 
-## Case Study 2
-
-![](GlobalFindex00.png)
-
-::: {style="font-size: 75%;"}
-<https://www.worldbank.org/en/publication/globalfindex/Report>
-:::
-
-## 
-
-::::: columns
-::: {.column width="40%"}
--   Light blue = 2011,2014,or 2017; Dark Blue = 2021
-
--   How difficult is it to...
-
-    -   ...find specific country?
-    -   ...find greatest change?
-    -   ...summarize overall changes?
-    -   ...precisely report a number?
-:::
-
-::: {.column width="60%"}
-![](GlobalFindex01.png)
-:::
-:::::
-
-## 
-
-::::: columns
-::: {.column width="40%"}
-> Sixty-two percent of the unbanked cited ‘lack of money’ as one of multiple responses (figure 1.2.3). (p35)
-
--   Plots of proportions should clearly communicate what denominators and numerators are
-:::
-
-::: {.column width="60%"}
-![](GlobalFindex02.png)
-:::
-:::::
-
-## 
-
-::::: columns
-::: {.column width="40%"}
-> In Bangladesh, 69 percent of unbanked adults have a mobile phone; in Nepal, 73 percent (figure 1.2.6).
-:::
-
-::: {.column width="60%"}
-![](GlobalFindex03.png)
-:::
-:::::
-
-## 
-
-::::: columns
-::: {.column width="40%"}
-> Figure 2.4.2 shows the relationship between payment inflows and the use of financial services among payment recipients as developing economy averages.
-:::
-
-::: {.column width="60%"}
-![](GlobalFindex04.png)
-:::
-:::::
-
-## Case study 3: Dr. John Snow’s map
+## Ex 3: Dr. John Snow’s map
 
 ### (Gilbert, 1958)
 
@@ -233,3 +218,5 @@ engine: knitr
 ## References
 
 Gilbert, E.W., 1958. *Pioneer maps of health and disease in England*. The Geographical Journal, 124(2), pp.172-183.
+
+Unwin, A., 2024. Getting (more out of) Graphics: Practice and Principles of Data Visualisation. CRC Press.

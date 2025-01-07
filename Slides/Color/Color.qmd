@@ -1,0 +1,462 @@
+---
+title: "Appropriate use of Color"
+author: "Phil Boonstra"
+subtitle: "PH345: Winter 2025"
+format: 
+  revealjs:
+    smaller: true
+    scrollable: true
+    theme: serif
+    self-contained: true
+    slide-number: c/t
+    footer: "[Course Home Page](https://psboonstra.github.io/PH345_W2025/)"
+editor: source
+engine: knitr
+---
+
+```{r}
+library(tidyverse)
+library(knitr)
+library(googlesheets4)
+library(cowplot)
+library(ggrepel)
+# See here:https://arelbundock.com/posts/quarto_figures/index.html
+knitr::opts_chunk$set(
+  out.width = "70%", # enough room to breath
+  fig.width = 6,     # reasonable size
+  fig.asp = 0.618,   # golden ratio
+  fig.align = "center" # mostly what I want
+)
+out2fig = function(out.width, out.width.default = 0.7, fig.width.default = 6) {
+  fig.width.default * out.width / out.width.default 
+}
+```
+
+
+## Case Study: FARS 2022
+
+Fatal Accident Reporting System (FARS)
+
+- Data from National Highway Traffic Safety Administration (NHTSA) on fatal traffic accidents in the US
+
+- Collected and reported annually from 1975. Most recent year available is 2022
+
+- Data are available at <https://www.nhtsa.gov/file-downloads?p=nhtsa/downloads/FARS/2022/National/>
+
+- For each state, I calculated the fraction of accidents that occurred in daylight and fraction of accidents that occurred in clear weather and compare across states. 
+
+##
+
+```{r}
+#| message: false
+fars2022 <- read_csv("../../FARS/FARS2022NationalCSV/accident.csv") %>%
+  mutate(DAY_WEEKNAME = factor(DAY_WEEKNAME, levels = c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")))
+
+fars2022 <-
+  fars2022 %>%
+  mutate(region = case_when(
+    STATENAME %in% c("Connecticut", "Maine", "Massachusetts", "New Hampshire", "Rhode Island", "Vermont", "Delaware") ~ "Northeast",
+    STATENAME %in% c("New Jersey", "New York", "Pennsylvania") ~ "Northeast",
+    STATENAME %in% c("Illinois", "Indiana", "Michigan", "Ohio", "Wisconsin") ~ "Midwest",
+    STATENAME %in% c("Iowa", "Kansas", "Minnesota", "Missouri", "Nebraska", "North Dakota", "South Dakota") ~ "Midwest",
+    STATENAME %in% c( "District of Columbia", "Florida", "Georgia", "Maryland", "North Carolina", "South Carolina", "Virginia", "West Virginia") ~ "South",
+    STATENAME %in% c("Alabama", "Kentucky", "Mississippi", "Tennessee") ~ "South",
+    STATENAME %in% c("Arkansas", "Louisiana", "Oklahoma", "Texas") ~ "South",
+    STATENAME %in% c("Arizona", "Colorado", "Idaho", "Montana", "Nevada", "New Mexico", "Utah", "Wyoming") ~ "West",
+    STATENAME %in% c("Alaska", "California", "Hawaii", "Oregon", "Washington") ~ "West"
+  ))
+
+fars2022_summary <-
+  fars2022 %>%
+  group_by(STATE, STATENAME, region) %>% 
+  summarize(mean_daylight = mean(LGT_CONDNAME == "Daylight"),
+            mean_clear = mean(WEATHERNAME == "Clear")) %>%
+  mutate(highlight_state = 
+           case_when(
+             mean_daylight > 0.57 | mean_daylight < 0.35 | mean_clear < 0.60 ~ TRUE ,
+             TRUE ~ FALSE
+           ))
+```
+
+
+```{r}
+#| fig-asp: 0.5
+#| out-width: 200%
+#| fig-width: 17.14286
+
+ggplot(fars2022_summary, aes(x = mean_clear, y = mean_daylight, color = STATENAME)) + 
+  geom_point(size = 4, aes(color = STATENAME)) +  
+  scale_x_continuous(name = "Fraction of Accidents in Clear Weather") +
+  scale_y_continuous(name = "Fraction of Accidents in Daylight") +
+  scale_color_discrete(name = "State") + 
+  geom_vline(xintercept = 0.5, linetype = "dashed") + 
+  geom_hline(yintercept = 0.5, linetype = "dashed") + 
+  theme(text = element_text(size = 24), 
+        legend.position = "right")
+```
+
+Three big problems with this plot:
+
+1) Too many colors to be helpful
+2) Color scheme encourages comparisons between alphabetically adjacent states
+3) Lots of plot space taken up by the legend
+
+## 
+
+What previous plot looks like to someone with 80% deuteranopia (can't see green well)
+
+![](simulated_colorblindness.png)
+
+::: {style="font-size: 75%;"}
+<https://bioapps.byu.edu/colorblind_image_tester>
+:::
+
+##
+
+Grouping by region instead of individual states
+
+```{r}
+#| out-width: 125%
+#| fig-width: 10.71429
+
+ggplot(fars2022_summary, aes(x = mean_clear, y = mean_daylight)) + 
+  geom_point(size = 4, aes(color = region)) +
+  geom_vline(xintercept = 0.5, linetype = "dashed") + 
+  geom_hline(yintercept = 0.5, linetype = "dashed") + 
+  scale_x_continuous(name = "Fraction of Accidents in Clear Weather") +
+  scale_y_continuous(name = "Fraction of Accidents in Daylight") +
+  scale_color_brewer(name = "Region", palette = "Dark2") +
+  theme(text = element_text(size = 24), 
+        legend.position = "right")
+```
+
+##
+
+Labeling outlying states explicitly using `ggrepel` R package (Slowikowski, 2024)
+
+```{r}
+#| label: final_fars
+#| out-width: 125%
+#| fig-width: 10.71429
+
+ggplot(fars2022_summary, aes(x = mean_clear, y = mean_daylight)) + 
+  geom_point(size = 4, aes(color = region)) +
+  # Adds reference lines
+  geom_vline(xintercept = 0.5, linetype = "dashed") + 
+  geom_hline(yintercept = 0.5, linetype = "dashed") + 
+  # Uses R package ggrepel:
+  geom_text_repel(data = filter(fars2022_summary, highlight_state), aes(label = STATENAME), size = 7, force = 3) +
+  scale_x_continuous(name = "Fraction of Accidents in Clear Weather") +
+  scale_y_continuous(name = "Fraction of Accidents in Daylight") +
+  # Use 'Dark2' palette from RColorBrewer
+  scale_color_brewer(name = "Region", palette = "Dark2") +
+  theme(text = element_text(size = 24), 
+        legend.position = "right")
+```
+
+## 
+
+1. Clearly something wrong with the data for Virgina regarding daylight accidents. Kansas and Vermont also worth closer look (dropped from plot below)
+2. In US Northeast and South, accidents occurred more often in non-daylight hours and clear weather; in US Midwest, in daylight hours; in US West, there is variability across states
+
+
+```{r}
+find_hull <- function(fars2022_summary) { fars2022_summary[chull(fars2022_summary$mean_daylight, fars2022_summary$mean_clear), ]
+}
+
+hulls <- 
+  fars2022_summary %>% 
+  filter(STATENAME != "Virginia") %>%
+  filter(STATENAME != "Kansas") %>%
+  filter(STATENAME != "Vermont") %>%
+  split(.$region) %>%
+  map_df(.f = find_hull)
+```
+
+```{r}
+#| out-width: 125%
+#| fig-width: 10.71429
+fars2022_summary %>%
+  filter(STATENAME != "Virginia") %>%
+  filter(STATENAME != "Kansas") %>%
+  filter(STATENAME != "Vermont") %>%
+  ggplot(aes(x = mean_clear, y = mean_daylight)) + 
+  geom_point(size = 4, aes(color = region)) +
+  # Adds reference lines
+  geom_vline(xintercept = 0.5, linetype = "dashed") + 
+  geom_hline(yintercept = 0.5, linetype = "dashed") + 
+  geom_polygon(data = hulls, mapping = aes(color = region, fill = region), alpha = 0.2) +
+  scale_x_continuous(name = "Fraction of Accidents in Clear Weather") +
+  scale_y_continuous(name = "Fraction of Accidents in Daylight") +
+  # Use 'Dark2' palette from RColorBrewer
+  scale_color_brewer(name = "Region", palette = "Dark2") +
+  scale_fill_brewer(name = "Region", palette = "Dark2") +
+  theme(text = element_text(size = 24), 
+        legend.position = "right")
+
+```
+
+## Defining Color
+
+::::: columns
+::: {.column width="40%"}
+Color can be defined by its hue (the defining attribute, e.g. blue or red),
+lightness (the brightness), and chroma (the richness of a color),
+
+  * Three hues (red, green, blue)
+  * Three lightnesses (top [not
+bright], middle, bottom [bright])
+  * Ten chromas (left [not intense] to
+right [intense])
+
+:::
+
+::: {.column width="60%"}
+
+```{r}
+#| fig-asp: 1
+library(scales)
+show_col(hcl(h = rep(rep(c(15, 135, 255), each = 10), times = 3),
+             c = rep(seq(10, 100, length = 10), times = 9),
+             l = rep(c(35, 65, 95), each = 30)),
+         labels = FALSE,
+         border = NA,
+         ncol = 10)
+```
+
+:::
+:::::
+
+
+## Cynthia Brewer (1960-)
+
+::::: columns
+::: {.column width="50%"}
+American cartographer and professor of geography at Penn State University
+
+Pioneering work in developing color schemes for maps (<https://colorbrewer2.org>) 
+
+Recipient of the Carl Mannerfelt Gold Medal in 2023
+
+:::
+
+::: {.column width="50%"}
+![](CindyBrewer.jpg){width=60%}
+
+::: {style="font-size: 75%;"}
+<https://www.geog.psu.edu/directory/cynthia-brewer>
+:::
+
+:::
+:::::
+
+
+
+## Color scales
+
+::::: columns
+::: {.column width="40%"}
+
+Instead of choosing individual colors, typically use predefined 'palette' of
+colors. Three types of palettes:
+
+- Sequential: colors follow a gradient from low to high
+- Qualitative: hue-based palettes for categorical data
+- Diverging: two sequential palettes "pasted together" 
+
+:::
+
+::: {.column width="60%"}
+
+Many palettes available in R, including `ggplot2`
+
+```{r}
+#| out-width: 150%
+#| fig-width: 12.85714
+
+library(RColorBrewer)
+par(mar=c(3,4,2,2))
+display.brewer.all()
+```
+:::
+:::::
+
+::: {style="font-size: 75%;"}
+<https://colorbrewer2.org/>
+:::
+
+## Default color scheme in `ggplot2`
+
+::: panel-tabset
+### Plot
+
+```{r}
+#| label: datasaurus_dozen
+#| out-width: 125%
+#| fig-width: 10.71429
+
+library(datasauRus)
+dino_plot <-
+  ggplot(datasaurus_dozen) +
+  geom_point(aes(x = x, y = y, color = dataset), size = 1) + 
+  facet_wrap(vars(dataset), ncol = 5) +
+  labs(x = NULL, y = NULL) + 
+  guides(color = FALSE) +
+  theme(text = element_text(size = 18)) 
+dino_plot
+```
+
+
+### Code
+
+```{r}
+#| label: datasaurus_dozen
+#| echo: true
+#| eval: false
+```
+:::
+
+## `Set3` palette (qualitative)
+
+::: panel-tabset
+### Plot
+
+```{r}
+#| label: datasaurus_dozen2
+#| out-width: 125%
+#| fig-width: 10.71429
+
+library(datasauRus)
+dino_plot +
+scale_color_brewer(palette = "Set3") 
+```
+
+
+### Code
+
+```{r}
+#| label: datasaurus_dozen2
+#| echo: true
+#| eval: false
+```
+:::
+
+## `Dark2` palette (qualitative)
+
+::: panel-tabset
+### Plot
+
+```{r}
+#| label: datasaurus_dozen3
+#| out-width: 125%
+#| fig-width: 10.71429
+
+library(datasauRus)
+dino_plot +
+scale_color_brewer(palette = "Dark2") 
+```
+
+
+### Code
+
+```{r}
+#| label: datasaurus_dozen3
+#| echo: true
+#| eval: false
+```
+:::
+
+## `Spectral` palette (diverging)
+
+::: panel-tabset
+### Plot
+
+```{r}
+#| label: datasaurus_dozen4
+#| out-width: 125%
+#| fig-width: 10.71429
+
+library(datasauRus)
+dino_plot +
+scale_color_brewer(palette = "Spectral") 
+```
+
+
+### Code
+
+```{r}
+#| label: datasaurus_dozen4
+#| echo: true
+#| eval: false
+```
+:::
+
+## `BrBG` palette (qualitative)
+
+::: panel-tabset
+### Plot
+
+```{r}
+#| label: datasaurus_dozen5
+#| out-width: 125%
+#| fig-width: 10.71429
+
+library(datasauRus)
+dino_plot +
+scale_color_brewer(palette = "BrBG") 
+```
+
+
+### Code
+
+```{r}
+#| label: datasaurus_dozen5
+#| echo: true
+#| eval: false
+```
+:::
+
+
+## Misleading comparisons
+
+![](fig1Wong2010a.png)
+
+> Perception of color can vary. (a,b) The same color can look different
+(a), and different colors can appear to be nearly the same by changing the
+background color (b)1. (c) The rectangles in the heat map indicated by the
+asterisks (*) are the same color but appear to be different.
+
+::: {style="font-size: 75%;"}
+Figure 1 from Wong (2010a)
+:::
+
+## Common pitfalls / Recommendations
+
+- Ignoring color blindness
+
+    * Use color-blind friendly color palettes when possible
+
+- Too Much Information
+    
+    * Use containment or other aesthetics to assist interpretation
+    * Avoid using more than 6-8 colors in a plot (Wong, 2011)
+
+- Misleading comparisons
+
+    * Viewers have difficulty mapping color changes to quantitative variables
+
+- Color scales
+
+    * Consider how colors relate to each other, background
+
+
+## References
+
+Slowikowski K, 2024. _ggrepel: Automatically Position Non-Overlapping Text Labels with 'ggplot2'_. R package version 0.9.5, <https://CRAN.R-project.org/package=ggrepel>.
+  
+Wilke, C.O., 2019. Fundamentals of data visualization: a primer on making informative and compelling figures. O'Reilly Media.
+
+Wong, B., 2010. *Color coding*. Nature Methods, 7(8), pp.573.
+
+Wong, B., 2011. *Color blindness*. Nature Methods, 8(6), pp.441.
+

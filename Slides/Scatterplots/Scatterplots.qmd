@@ -1,5 +1,5 @@
 ---
-title: "Scatterplots"
+title: "Scatterplots and Variants"
 author: "Phil Boonstra"
 subtitle: "PH345: Winter 2025"
 format: 
@@ -8,12 +8,30 @@ format:
     scrollable: true
     theme: serif
     self-contained: true
+    slide-number: c/t
     footer: "[Course Home Page](https://psboonstra.github.io/PH345_W2025/)"
 editor: source
 engine: knitr
 ---
 
-## Edward R Tufte
+```{r}
+library(datasauRus)
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+# See here:https://arelbundock.com/posts/quarto_figures/index.html
+knitr::opts_chunk$set(
+  out.width = "70%", # enough room to breath
+  fig.width = 6,     # reasonable size
+  fig.asp = 0.618,   # golden ratio
+  fig.align = "center" # mostly what I want
+)
+out2fig = function(out.width, out.width.default = 0.7, fig.width.default = 6) {
+  fig.width.default * out.width / out.width.default 
+}
+```
+
+## Edward R Tufte (1942-)
 
 ::::: columns
 ::: {.column width="50%"}
@@ -26,34 +44,35 @@ Author of Visual Display of Quantitative Information (2001)
 
 ::: {.column width="50%"}
 ![](Edward_Tufte_-_cropped.jpg){width="50%"}
-:::
-:::::
 
 ::: {style="font-size: 75%;"}
-Photo by Keegan Peterzell - Own work, CC BY-SA 4.0, https://commons.wikimedia.org/w/index.php?curid=40367115
+Photo by Keegan Peterzell - Own work, CC BY-SA 4.0, <https://commons.wikimedia.org/w/index.php?curid=40367115>
 :::
 
-## Eight principles of graphical excellence
-
-::: {.fragment .highlight-red fragment-index="1"}
--   Show the data
--   Reveal the data at several levels of detail
--   Encourage comparison between data
 :::
 
--   Induce the viewer to think about the substance
--   Avoid distorting what the data says
--   Present many numbers in small space
--   Make large data sets coherent
--   Clear purpose: description, exploration, tabulation or decoration
+:::::
+
+## Nine principles of graphical excellence
+
+1. Show the data
+2. Induce the viewer to think about the substance 
+3. Be integrated with the statistical and verbal descriptions of data
+4. Avoid distorting what the data say
+5. Present many numbers in small space
+6. Make large data sets coherent
+7. Reveal the data at several levels of detail, from broad overview to fine structure
+8. Encourage comparison between different pieces of data
+9. Serve clear purpose: description, exploration, tabulation or decoration
+
+
+## Graphical excellence
+
+*1. Show the data*
 
 ## 
 
 ```{r, message = FALSE}
-library(datasauRus)
-library(tidyverse)
-library(knitr)
-library(kableExtra)
 datasaurus_dozen2 <- 
   datasaurus_dozen %>%
   filter(dataset %in% c("circle", "dino", "slant_down")) %>%
@@ -84,7 +103,11 @@ datasaurus_dozen2 %>%
 :::
 
 ::: {.column width="55%"}
-```{r, fig.height = 12}
+```{r}
+#| fig-asp: 1.4
+#| out-width: 90%
+#| fig-width: 7.714286
+
 ggplot(datasaurus_dozen2 %>% pivot_longer(cols = c(x, y))) +
   geom_point(aes(y = dataset2, x = value), size = 3) + 
   facet_wrap(vars(name), ncol = 1) +
@@ -95,15 +118,14 @@ ggplot(datasaurus_dozen2 %>% pivot_longer(cols = c(x, y))) +
 :::
 :::::
 
-## Graphical excellence
-
-*Show the data*
-
 ## 
 
-```{r, fig.width = 13}
+```{r}
+#| fig-asp: 0.4
+#| out-width: 130%
+#| fig-width: 11.14286
 ggplot(datasaurus_dozen2) +
-  geom_point(aes(x = x, y = y), size = 3) + 
+  geom_point(aes(x = x, y = y), size = 2) + 
   facet_wrap(vars(dataset2), ncol = 3) +
   guides(color = "none") +
   theme(text = element_text(size = 24)) 
@@ -111,15 +133,21 @@ ggplot(datasaurus_dozen2) +
 
 ## 
 
-```{r, fig.width = 13, fig.height = 8}
-p1 <-
-  ggplot(datasaurus_dozen) +
-  geom_point(aes(x = x, y = y), size = 1) + 
-  facet_wrap(vars(dataset), ncol = 5) +
+
+
+```{r}
+#| label: datasaurus_dozen
+#| out-width: 130%
+#| fig-width: 11.14286
+# Install packages if needed: 
+# install.packages("datasauRus"); install.packages("tidyverse")
+# Load packages
+library(datasauRus); library(tidyverse);
+ggplot(data = datasaurus_dozen) +
+  geom_point(mapping = aes(x = x, y = y)) +
+  facet_wrap(facets = vars(dataset), ncol = 5) +
   labs(x = NULL, y = NULL) + 
-  guides(color = "none") +
   theme(text = element_text(size = 18)) 
-p1
 ```
 
 ## 
@@ -144,10 +172,23 @@ datasaurus_dozen %>%
 
 ## 
 
-```{r, fig.width = 13, fig.height = 8}
-p1 +
-  geom_smooth(aes(x = x, y = y), color = "black", method = "lm", se = FALSE)
+```{r}
+#| out-width: 130%
+#| fig-width: 11.14286
+ggplot(datasaurus_dozen) +
+  geom_point(aes(x = x, y = y), size = 1) +
+  geom_smooth(aes(x = x, y = y), color = "black", method = "lm", se = FALSE) + 
+  facet_wrap(vars(dataset), ncol = 5) +
+  labs(x = NULL, y = NULL) + 
+  guides(color = "none") +
+  theme(text = element_text(size = 18)) 
 ```
+
+## Graphical excellence
+
+*2. Induce the viewer to think about the substance*
+
+*3. Be integrated with the statistical and verbal descriptions of data*
 
 ## Scatterplots are simplest bivariate plots
 
@@ -157,21 +198,26 @@ Steps:
 
 2.  Place points on a cartesian coordinate system. Labeling of points reflects assumption that $x_i$ goes on the x-axis, $y_i$ goes on y-axis
 
-## Example: Figure 7 (Doll, 1955)
+## Ex 1: Lung cancer, cigarettes
 
 ::::: columns
 ::: {.column width="30%"}
 Lung-cancer deaths per million in 1950 ($y$) against annual per-capita cigarette consumption in 1930 ($x$) for 11 countries.
+
 :::
 
 ::: {.column width="60%"}
-![](LungCancer2.png)
+![](LungCancer2.png){width="80%"}
 :::
 :::::
 
 ::: {style="font-size: 75%;"}
-<https://www.sciencedirect.com/science/article/pii/S0065230X08609173>
+Figure 7 (Doll, 1955)
 :::
+
+## Graphical excellence
+
+*4. Avoid distorting what the data say*
 
 ## Scatterplots imply a relationship
 
@@ -181,13 +227,26 @@ So don't create a scatterplot if you don't want to imply a relationship.
 :::
 
 ::: {.column width="60%"}
-![](spurious1.png)
+![](spurious1.png){width="80%"}
 :::
 :::::
 
 ::: {style="font-size: 75%;"}
 <https://www.tylervigen.com/spurious-correlations>
 :::
+
+## Poor choice of scale
+
+
+![](fig36wilke){width="60%"}
+![](fig35wilke){width="60%"}
+
+::: {style="font-size: 75%;"}
+Figures 3.6 (top) and 3.5 (bottom), Wilke (2019)
+:::
+
+
+
 
 ## Dependent vs Independent Variables
 
@@ -197,9 +256,14 @@ Two main types of scatterplots:
 
 2.  $x$ is controlled or "independent" variable, e.g. time, age, dose, or an experimentally controlled variable.
 
+
+
 ## William Playfair (1759-1823)
 
--   Scottish engineer, economist, proto-government-spy, and many other things
+::::: columns
+::: {.column width="50%"}
+
+Scottish engineer, economist, proto-government-spy, and many other things
 
 > When he wasn’t blackmailing lords and being sued for libel, William Playfair invented the pie chart, the bar graph, and the line graph
 
@@ -208,15 +272,31 @@ Cara Giamo, 2016
 ::: {style="font-size: 75%;"}
 <https://www.atlasobscura.com/articles/the-scottish-scoundrel-who-changed-how-we-see-data>
 :::
+:::
 
-## Case study: Playfair's graph of prices, wages, and British monarchs
+::: {.column width="50%"}
+![](William-playfair.jpg){width="50%"}
+
+::: {style="font-size: 75%;"}
+<https://en.wikipedia.org/wiki/William_Henry_Playfair#/media/File:William-playfair.jpg>, Public Domain
+:::
+
+:::
+
+:::::
+
+
+
+
+
+## Ex 2: Playfair's graph of prices, wages, and British monarchs
 
 ![](playfair1.png){width="80%"}
 
 > Never at any former time was wheat so cheap, in proportional to mechanical labor, as it is in the present time (Playfair)
 
 ::: {style="font-size: 75%;"}
-Figure 3, <https://onlinelibrary.wiley.com/doi/epdf/10.1002/jhbs.20078>; Originally from Tufte, p34
+Figure 3, Friendly and Denis (2005); Originally from Tufte, p34
 :::
 
 ```{r, echo = FALSE}
@@ -235,7 +315,7 @@ Figure 3, <https://onlinelibrary.wiley.com/doi/epdf/10.1002/jhbs.20078>; Origina
 Direct scatterplot of wheat price and wage, connected by consecutive years
 
 ::: {style="font-size: 75%;"}
-Figure 5, <https://onlinelibrary.wiley.com/doi/epdf/10.1002/jhbs.20078>
+Figure 5, Friendly and Denis (2005)
 :::
 
 ## Modernization Attempt 2
@@ -247,22 +327,18 @@ Figure 5, <https://onlinelibrary.wiley.com/doi/epdf/10.1002/jhbs.20078>
 Now very easy to see Playfair's claim about inflation-adjusted price of wheat. Statistical graphics should reveal data (Tufte, p13)
 
 ::: {style="font-size: 75%;"}
-Figure 5, <https://onlinelibrary.wiley.com/doi/epdf/10.1002/jhbs.20078>
+Figure 5, Friendly and Denis (2005)
 :::
 
 ## Graphical excellence
 
-*Reveal the data at several levels of detail*
+*5. Present many numbers in small space*
 
-**Aesthetics** are quantitative mappings of data to visual properties:
+*6. Make large data sets coherent*
 
--   x and y coordinates
--   size / area / volume
--   color
--   transparency
--   shape
+*7. Reveal the data at several levels of detail, from broad overview to fine structure*
 
-## Temperature anomalies
+## Ex 3: Temperature anomalies
 
 Land and ocean anomalies from 1850 to 2024 with respect to the 1901-2000 average
 
@@ -270,13 +346,18 @@ Separate data for northern and southern hemispheres
 
 ## Northern hemisphere
 
-```{r, message = FALSE, echo = FALSE}
+```{r}
+#| message: false
+#| echo: false
+#| out-width: 130%
+#| fig-width: 11.14286
+
 temps_southern <- 
   bind_cols(hemi = "Southern",
-            read_csv("../../Temperatures/temp_southern.csv", skip = 4))
+            read_csv("../../GlobalTemps/temp_southern.csv", skip = 4))
 temps_northern <-
   bind_cols(hemi = "Northern",
-            read_csv("../../Temperatures/temp_northern.csv", skip = 4))
+            read_csv("../../GlobalTemps/temp_northern.csv", skip = 4))
 
 ggplot(temps_northern) +
   geom_point(aes(x = Year, y = Anomaly), size = 1) + 
@@ -293,8 +374,11 @@ Average temperature anomalies in the northern hemisphere over time
 
 ## Connected lines
 
-```{r, message = FALSE, echo = FALSE}
-
+```{r}
+#| message: false
+#| echo: false
+#| out-width: 130%
+#| fig-width: 11.14286
 ggplot(temps_northern) +
   geom_point(aes(x = Year, y = Anomaly), size = 1) + 
   geom_line(aes(x = Year, y = Anomaly)) +
@@ -312,6 +396,10 @@ Emphasis on interyear variability
 ## Smooth interpolation
 
 ```{r, message = FALSE, echo = FALSE}
+#| message: false
+#| echo: false
+#| out-width: 130%
+#| fig-width: 11.14286
 
 ggplot(temps_northern) +
   geom_point(aes(x = Year, y = Anomaly), size = 1) + 
@@ -330,6 +418,9 @@ Emphasis on trend
 ## Bars
 
 ```{r}
+#| out-width: 130%
+#| fig-width: 11.14286
+
 ggplot(temps_northern) +
   geom_col(aes(x = Year, y = Anomaly), position = "dodge") + 
   scale_x_continuous(name = NULL, expand = expansion(0.01)) +
@@ -346,6 +437,9 @@ Emphasis on positive vs negative deviation
 ## Ribbon
 
 ```{r}
+#| out-width: 130%
+#| fig-width: 11.14286
+
 ggplot(temps_northern) +
   geom_ribbon(aes(x = Year, ymin = 0, ymax = Anomaly), alpha = 0.6) + 
   scale_x_continuous(name = NULL, expand = expansion(0.01)) +
@@ -361,11 +455,15 @@ Emphasis on positive vs negative deviation, also on time spent above or below
 
 ## Graphical excellence
 
-*Encourage comparison between data*
+*8. Encourage comparison between different pieces of data*
 
 ## Northern, Southern hemispheres
 
-```{r, message = FALSE, echo = FALSE}
+```{r}
+#| message: false
+#| echo: false
+#| out-width: 130%
+#| fig-width: 11.14286
 temps <-
   bind_rows(temps_southern, temps_northern)
 
@@ -385,11 +483,15 @@ ggplot(temps) +
 
 ## 
 
-```{r, message = FALSE, echo = FALSE}
+```{r}
+#| message: false
+#| echo: false
+#| out-width: 130%
+#| fig-width: 11.14286
 
 ggplot(temps) +
   geom_point(aes(x = Year, y = Anomaly, color = hemi), size = 1) + 
-  geom_step(aes(x = Year, y = Anomaly, color = hemi)) +
+  geom_step(aes(x = Year, y = Anomaly, color = hemi), direction = "mid") +
   scale_x_continuous(name = NULL, expand = expansion(0.01)) +
   scale_color_manual(name = NULL, values = c("#1B9E77", "#D95F02")) +
   scale_y_continuous(name = "Temperature Anomaly (C)", n.breaks = 6) + 
@@ -404,7 +506,11 @@ ggplot(temps) +
 
 ## 
 
-```{r, message = FALSE, echo = FALSE}
+```{r}
+#| message: false
+#| echo: false
+#| out-width: 130%
+#| fig-width: 11.14286
 
 ggplot(temps) +
   geom_point(aes(x = Year, y = Anomaly, color = hemi), size = 1) + 
@@ -424,6 +530,9 @@ ggplot(temps) +
 ## 
 
 ```{r}
+#| out-width: 130%
+#| fig-width: 11.14286
+
 ggplot(temps) +
   geom_col(aes(x = Year, y = Anomaly, fill = hemi), position = "dodge") + 
   scale_x_continuous(name = NULL, expand = expansion(0.01)) +
@@ -441,6 +550,9 @@ ggplot(temps) +
 ## 
 
 ```{r}
+#| out-width: 130%
+#| fig-width: 11.14286
+
 ggplot(temps) +
   geom_ribbon(aes(x = Year, ymin = 0, ymax = Anomaly, fill = hemi), alpha = 0.6) + 
   scale_x_continuous(name = NULL, expand = expansion(0.01)) +
@@ -455,9 +567,24 @@ ggplot(temps) +
 <https://www.ncei.noaa.gov/access/monitoring/climate-at-a-glance/global/time-series>
 :::
 
-## Summary
+## Graphical excellence
 
-\[Still need\]
+*9. Serve clear purpose: description, exploration, tabulation or decoration*
+
+## Ex 4: Twitter followers
+
+![](nytimes.png){width="80%"}
+
+Description: Total number of followers Twiter Blue account has as of early November, 2022 against day joining twitter
+
+::: {style="font-size: 75%;"}
+Scan and commentary from <https://junkcharts.typepad.com/junk_charts/2022/12/the-blue-mist.html>; original article at <https://www.nytimes.com/interactive/2022/11/23/technology/twitter-elon-musk-twitter-blue-check-verification.html>
+:::
+
+:::{.speaker-notes}
+What is the purpose? Hard to know whether blue users have a lot of followers; would expect time bias but there doesn't seem to be one (no funnel effect); why are some points labeled?
+:::
+
 
 ## References
 

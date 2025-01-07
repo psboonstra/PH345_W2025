@@ -1,0 +1,288 @@
+---
+title: "American Negro Exhibit at the 1900 Paris Exposition"
+author: "Phil Boonstra"
+subtitle: "PH345: Winter 2025"
+format: 
+  revealjs:
+    smaller: true
+    scrollable: true
+    theme: serif
+    self-contained: true
+    slide-number: c/t
+    footer: "[Course Home Page](https://psboonstra.github.io/PH345_W2025/)"
+editor: source
+engine: knitr
+---
+
+```{r}
+library(tidyverse)
+library(knitr)
+library(googlesheets4)
+library(cowplot)
+library(ggrepel)
+# See here:https://arelbundock.com/posts/quarto_figures/index.html
+knitr::opts_chunk$set(
+  out.width = "70%", # enough room to breath
+  fig.width = 6,     # reasonable size
+  fig.asp = 0.618,   # golden ratio
+  fig.align = "center" # mostly what I want
+)
+out2fig = function(out.width, out.width.default = 0.7, fig.width.default = 6) {
+  fig.width.default * out.width / out.width.default 
+}
+```
+
+## 1900 Paris Exposition
+
+::::: columns
+::: {.column width="30%"}
+
+World's fair held April-November 1900
+
+"Countries from around the world were invited by France to showcase their achievements and cultures"
+
+::: {style="font-size: 75%;"}
+<https://en.wikipedia.org/wiki/Exposition_Universelle_(1900)>
+:::
+:::
+
+::: {.column width="70%"}
+![](parisexposition.jpg){width=80%}
+
+::: {style="font-size: 75%;"}
+<https://www.loc.gov/pictures/item/2007681990/>
+:::
+
+:::
+:::::
+
+## American Negro Exhibit
+
+Thomas J. Calloway and Booker T. Washington petitioned US government to include exhibit dedicated
+to social and economic progress of Black Americans
+
+Invited former classmate W.E.B DuBois to create social study of African American life
+
+## W.E.B DuBois
+
+::::: columns
+::: {.column width="50%"}
+
+Black American sociologist, historian, novelist, and poet
+
+Helped reorient field of sociology to be based on empiric data and charts
+
+First African American to receive PhD from Harvard University
+
+:::
+
+::: {.column width="50%"}
+![](dubois.png){width=80%}
+
+::: {style="font-size: 75%;"}
+<https://credo.library.umass.edu/view/full/mums312-i0396>
+:::
+
+:::
+:::::
+
+##
+
+DuBois and students from Atlanta University created two sets of infographics and data visualizations 
+
+1. The Georgia Negro: A Social Study (36 plates)
+2. A Series of Statistical Charts Illustrating the Condition of the Descendents
+of Former African Slaves Now Resident in the United States of America (37 plates)
+
+Mix of traditional and unique bar plots, line plots, and pie charts with intentional
+use of color
+
+## Three refutations
+
+1. The Black race was not going extinct (contrast with social Darwinism)
+
+2. Highlighted Black American progress in spite of slavery, Jim Crow, and white supremacy (contrast with imperalist ethos of Exposition: lifting lower races out of barbarism)
+
+3. Black Americans (and all those of African descent) had their own history, civilization, and culture, both within and separate from white America
+
+
+
+## 
+
+::::: columns
+::: {.column width="50%"}
+
+![](plate3.jpg){width=100%}
+
+::: {style="font-size: 75%;"}
+[Plate 3](https://www.loc.gov/pictures/collection/anedub/item/2013650422/)
+:::
+
+:::
+
+::: {.column width="50%"}
+
+![](plate4.jpg){width=100%}
+
+
+::: {style="font-size: 75%;"}
+[Plate 4](https://www.loc.gov/pictures/collection/anedub/item/2013650423/)
+:::
+
+:::
+:::::
+
+:::{.speaker-notes}
+
+:::
+
+## 
+
+::::: columns
+::: {.column width="50%"}
+
+![](plate9.jpg){width=100%}
+
+::: {style="font-size: 75%;"}
+[Plate 9](https://www.loc.gov/pictures/collection/anedub/item/2013650428/)
+:::
+
+:::
+
+::: {.column width="50%"}
+
+![](plate10.jpg){width=100%}
+
+
+::: {style="font-size: 75%;"}
+[Plate 10](https://www.loc.gov/pictures/collection/anedub/item/2013650429/)
+:::
+
+:::
+:::::
+
+:::{.speaker-notes}
+
+:::
+
+
+## 
+
+::::: columns
+::: {.column width="50%"}
+
+![](plate11.jpg){width=100%}
+
+::: {style="font-size: 75%;"}
+[Plate 11](https://www.loc.gov/pictures/collection/anedub/item/2013650430/)
+:::
+
+:::
+
+::: {.column width="50%"}
+
+![](plate12.jpg){width=100%}
+
+
+::: {style="font-size: 75%;"}
+[Plate 12](https://www.loc.gov/pictures/collection/anedub/item/2013650431/)
+:::
+
+:::
+:::::
+
+:::{.speaker-notes}
+
+:::
+
+##
+
+
+![](plate21.jpg){width=100%}
+
+
+::: {style="font-size: 75%;"}
+[Plate 21](https://www.loc.gov/pictures/collection/anedub/item/2013650441/)
+:::
+
+
+##
+
+
+![](plate25.jpg){width=100%}
+
+
+::: {style="font-size: 75%;"}
+[Plate 25](https://www.loc.gov/pictures/collection/anedub/item/2013650445/)
+:::
+
+
+## 
+
+::::: columns
+::: {.column width="50%"}
+
+![](plate47.jpg){width=100%}
+
+::: {style="font-size: 75%;"}
+[Plate 47](https://www.loc.gov/pictures/collection/anedub/item/2014645352/)
+:::
+
+:::
+
+::: {.column width="50%"}
+
+![](plate48.jpg){width=100%}
+
+
+::: {style="font-size: 75%;"}
+[Plate 48](https://www.loc.gov/pictures/collection/anedub/item/2014645353/)
+:::
+
+:::
+:::::
+
+:::{.speaker-notes}
+
+:::
+
+
+## 
+
+::::: columns
+::: {.column width="50%"}
+
+![](plate51.jpg){width=100%}
+
+::: {style="font-size: 75%;"}
+[Plate 51](https://www.loc.gov/pictures/collection/anedub/item/2014645356/)
+:::
+
+:::
+
+::: {.column width="50%"}
+
+![](plate53.jpg){width=100%}
+
+
+::: {style="font-size: 75%;"}
+[Plate 53](https://www.loc.gov/pictures/collection/anedub/item/2014645358/)
+:::
+
+:::
+:::::
+
+:::{.speaker-notes}
+
+:::
+
+## To do:
+
+(wrap into )
+
+
+## References
+
+Battle-Baptiste, W. and Rusert, B. eds., 2018. WEB Du Bois's data portraits: Visualizing black America. Chronicle Books.
+
+Du Bois, W.E.B., 1900. African American photographs assembled for 1900 Paris Exposition. Library of Congress, Washington, DC [online](https://www.loc.gov/pictures/collection/anedub)
