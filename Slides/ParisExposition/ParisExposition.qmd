@@ -1,5 +1,5 @@
 ---
-title: "American Negro Exhibit at the 1900 Paris Exposition"
+title: "1900 Paris Exposition"
 author: "Phil Boonstra"
 subtitle: "PH345: Winter 2025"
 format: 
@@ -59,7 +59,7 @@ World's fair held April-November 1900
 ## American Negro Exhibit
 
 Thomas J. Calloway and Booker T. Washington petitioned US government to include exhibit dedicated
-to social and economic progress of Black Americans
+to social and economic progress of Black Americans: *The American Negro Exhibit*
 
 Invited former classmate W.E.B DuBois to create social study of African American life
 
