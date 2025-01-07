@@ -1,0 +1,32 @@
+---
+title: "Public Health 345, Winter 2025"
+format: 
+  html:
+    theme: lux
+    fontsize: 1.5em
+    self-contained: true
+    smooth-scroll: true
+editor: source
+---
+
+#### [Introduction](https://psboonstra.github.io/PH345_W2025/Slides/Introduction/Introduction.html#/title-slide)
+
+#### [Scatterplots](https://psboonstra.github.io/PH345_W2025/Slides/Scatterplots/Scatterplots.html#/title-slide)
+
+#### [Aesthetics](https://psboonstra.github.io/PH345_W2025/Slides/Aesthetics/Aesthetics.html#/title-slide)
+
+#### [Histograms](https://psboonstra.github.io/PH345_W2025/Slides/Histograms/Histograms.html#/title-slide)
+
+#### [Color](https://psboonstra.github.io/PH345_W2025/Slides/Color/Color.html#/title-slide)
+
+#### [Facets](https://psboonstra.github.io/PH345_W2025/Slides/Facets/Facets.html#/title-slide)
+
+#### Maps
+
+#### [Case Study: 1900 Paris Exposition](https://psboonstra.github.io/PH345_W2025/Slides/ParisExposition/ParisExposition.html#/title-slide)
+
+#### Chartjunk and Deception
+
+#### ggplot2 Extensions
+
+#### Shiny
