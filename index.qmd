@@ -9,24 +9,24 @@ format:
 editor: source
 ---
 
-#### [Introduction](https://psboonstra.github.io/PH345_W2025/Slides/Introduction/Introduction.html#/title-slide)
+[Introduction](https://psboonstra.github.io/PH345_W2025/Slides/Introduction/Introduction.html#/title-slide)
 
-#### [Scatterplots](https://psboonstra.github.io/PH345_W2025/Slides/Scatterplots/Scatterplots.html#/title-slide)
+Scatterplots
 
-#### [Aesthetics](https://psboonstra.github.io/PH345_W2025/Slides/Aesthetics/Aesthetics.html#/title-slide)
+Aesthetics
 
-#### [Histograms](https://psboonstra.github.io/PH345_W2025/Slides/Histograms/Histograms.html#/title-slide)
+Histograms
 
-#### [Color](https://psboonstra.github.io/PH345_W2025/Slides/Color/Color.html#/title-slide)
+Color
 
-#### [Facets](https://psboonstra.github.io/PH345_W2025/Slides/Facets/Facets.html#/title-slide)
+Facets
 
-#### Maps
+Maps
 
-#### [Case Study: 1900 Paris Exposition](https://psboonstra.github.io/PH345_W2025/Slides/ParisExposition/ParisExposition.html#/title-slide)
+Case Study: 1900 Paris Exposition
 
-#### Chartjunk and Deception
+Chartjunk, Deception, and Chicanery
 
-#### ggplot2 Extensions
+ggplot2 Extensions
 
-#### Shiny
+Shiny
