@@ -9,7 +9,11 @@ format:
 editor: source
 ---
 
+<!---
 [Introduction](https://psboonstra.github.io/PH345_W2025/Slides/Introduction/Introduction.html#/title-slide)
+--->
+
+Introduction
 
 Scatterplots
 
