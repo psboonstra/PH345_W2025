@@ -266,10 +266,7 @@ Measles epidemic in Fiji 1875
 :::
 :::::
 
-## Ex 4: Cholera
-
-
-## John Snow
+## Ex 4: Cholera, John Snow
 
 ::::: columns
 
@@ -303,9 +300,9 @@ Gilbert, 1958 <https://www.jstor.org/stable/pdf/1790244.pdf>
 
 ## Clearing up some misconceptions
 
-Although normally presented as strict-cause effect, truth is not as clear cut. 
+Although normally presented as strict-cause effect, truth is not as clear cut
 
-- Cholera cases were already declining prior to removal. 
+- Cholera cases were already declining prior to removal
 - Snow made his plot after removal of the handle
 
 ## Update: Handle is still gone
@@ -361,6 +358,8 @@ Although normally presented as strict-cause effect, truth is not as clear cut.
 ## References
 
 Andrews, R.J., 2022. How Florence Nightingale changed data visualization forever. Scientific American, 327(2), pp.78-85.
+
+Field, K., 2020. Mapping coronavirus, responsibly. [online] ArcGIS Blog. Available at: https://www.esri.com/arcgis-blog/products/product/mapping/mapping-coronavirus-responsibly/.
 
 Gilbert, E.W., 1958. *Pioneer maps of health and disease in England*. The Geographical Journal, 124(2), pp.172-183.
 
