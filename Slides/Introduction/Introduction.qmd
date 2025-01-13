@@ -14,9 +14,76 @@ editor: source
 engine: knitr
 ---
 
-## Course Introduction: Telling stories with data
+## About Me
 
-## Ex 1: Gapminder and Life Expectancy
+  - Associate Professor
+  - PhD Biostatistics from UM (2012)
+  - BA Mathematics / Political Science from Calvin University (2006)
+
+
+## About you
+
+  - Your year and major
+  - Two non-academic things about you
+  - Why you are here
+
+## Course Thesis
+
+Data visualization can positively impact our understanding of public health and how we improve public health
+
+## Ex 1: Florence Nightingale (1820-1910)
+
+::::: columns
+::: {.column width="50%"}
+
+Statistician, nurse, and writer
+
+Military nurse for Great Britian during Crimean War
+
+Realized that her audience (the British royalty, generals, and politicians) didn't understand tables. Used statistical graphics to advocate for legislation that improved public health 
+
+:::
+
+::: {.column width="50%"}
+![](fn.jpg){width=60%}
+
+::: {style="font-size: 75%;"}
+Henry Hering, <https://www.npg.org.uk/collections/search/portrait/mw59323/Florence-Nightingale>
+Creative Commons
+:::
+
+:::
+:::::
+
+## 
+
+![](fncoxcomb.png){.nostretch width=100%}
+
+Cause of British soldiers' death during Crimean War: blue denotes preventable deaths, red denotes deaths from war wounds, black denotes other deaths
+
+::: {style="font-size: 75%;"}
+<https://www.scientificamerican.com/article/how-florence-nightingale-changed-data-visualization-forever/>
+:::
+
+## 
+
+![](fnlines.png){width="90%"}
+Comparison of mortality between English civilians and soldiers *living in barracks in England during peacetime*
+
+::: {style="font-size: 75%;"}
+<https://www.scientificamerican.com/article/how-florence-nightingale-changed-data-visualization-forever/>
+:::
+
+##
+
+> The [British Public Health Act of 1875] established requirements for well-built sewers, clean running water and regulated building codes. The law and the precedent it set worldwide would be driving forces...in doubling the average human life span during the following century.
+
+::: {style="font-size: 75%;"}
+RJ Andrews (2022)
+:::
+
+
+## Ex 2: Gapminder and Life Expectancy
 
 Chapter 2 of Unwin (2024)
 
@@ -36,6 +103,10 @@ What do you see?
 
 :::{.speaker-notes}
 completely flat lines in 19th century; spikes in various places; lots of spikes in 1940s; increases after 1950
+Ukraine famine: 1932
+Irish potato famine: 1840s
+Tunisian cholera epidemic: 1891
+Measles epidemic in Fiji 1875
 :::
 
 ##
@@ -48,22 +119,22 @@ completely flat lines in 19th century; spikes in various places; lots of spikes 
 
 ##
 
-![](fig23gmg.png){width="70%"}
+![](fig23gmg.png){.nostretch width=90%}
 
 ##
 
-![](fig25gmg.png){width="70%"}
+![](fig25gmg.png){.nostretch width=90%}
 
 ##
 
-![](fig26gmg.png){width="70%"}
+![](fig26gmg.png){.nostretch width=90%}
 
 ##
 
 ![](fig29gmg.png){width="70%"}
 
 
-## Ex 2: Mapping COVID-19
+## Ex 3: Mapping COVID-19
 
 ![](Covid00.png)
 
@@ -195,15 +266,52 @@ completely flat lines in 19th century; spikes in various places; lots of spikes 
 :::
 :::::
 
-## Ex 3: Dr. John Snow’s map
+## Ex 4: Cholera
 
-### (Gilbert, 1958)
 
-![](JohnSnowPump.png){width="60%"}
+## John Snow
+
+::::: columns
+
+::: {.column width="50%"}
+![](John_Snow.jpg){width=60%}
 
 ::: {style="font-size: 75%;"}
-<https://www.jstor.org/stable/pdf/1790244.pdf>
+Public Domain, https://commons.wikimedia.org/w/index.php?curid=403227
 :::
+
+:::
+
+::: {.column width="50%"}
+
+British physician, a founder of modern epidemiology 
+
+Gathered data to refute 'miasma theory' of diseases that disease spread through bad air
+
+:::
+
+:::::
+
+
+## 
+
+![](JohnSnowPump.png){.nostretch width=100%}
+
+::: {style="font-size: 75%;"}
+Gilbert, 1958 <https://www.jstor.org/stable/pdf/1790244.pdf>
+:::
+
+## Clearing up some misconceptions
+
+Although normally presented as strict-cause effect, truth is not as clear cut. 
+
+- Cholera cases were already declining prior to removal. 
+- Snow made his plot after removal of the handle
+
+## Update: Handle is still gone
+
+![](IMG_9040.jpeg)
+
 
 ## Course Objectives
 
@@ -215,8 +323,49 @@ completely flat lines in 19th century; spikes in various places; lots of spikes 
 
 4.  To create and improve data visualizations using the R statistical environment;
 
+## What will we be doing in class?
+
+1. Lectures on data visualization principles, technical topics, code, and case study (me)
+
+2. Coding together (us)
+
+3. Plots of the week (you)
+
+4. Two in-class quizzes (you)
+
+## How will your grade be determined?
+
+1. Modules 1-3 of online course “Arranging and Visualizing Data in R” (26%)
+<https://www.coursera.org/learn/arranging-visualizing-data-r>
+
+2. Plot of the week
+
+3. Out-of-class assessments (3x)
+
+4. In-class quizzes (2x)
+
+5. Participation through attendance
+
+## Next steps
+
+1. Complete office hours poll: <https://whenisgood.net/rmixcrd>
+
+2. Create Coursera account using your umich email and register for *Arranging and Visualizing Data in R* course: <https://www.coursera.org/learn/arranging-visualizing-data-r/>
+
+3. Create posit.cloud account. Recommended but not required to use your umich email
+
+4. Join the PH345 workspace via <https://posit.cloud/spaces/600155/join?access_code=Lv4YkrpGmhlIC-bGQwKOPYmLdO1a5mVzhqmZtFGm>
+
+
+
 ## References
+
+Andrews, R.J., 2022. How Florence Nightingale changed data visualization forever. Scientific American, 327(2), pp.78-85.
 
 Gilbert, E.W., 1958. *Pioneer maps of health and disease in England*. The Geographical Journal, 124(2), pp.172-183.
 
+Small, H., 2019. Florence Nightingale’s statistical diagrams. [online] Available at: https://www.york.ac.uk/depts/maths/histstat/small.htm.
+
 Unwin, A., 2024. Getting (more out of) Graphics: Practice and Principles of Data Visualisation. CRC Press.
+
+Wikipedia Contributors, 2019. 1854 Broad Street cholera outbreak. [online] Wikipedia. Available at: https://en.wikipedia.org/wiki/1854_Broad_Street_cholera_outbreak.

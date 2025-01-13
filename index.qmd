@@ -10,10 +10,9 @@ editor: source
 ---
 
 <!---
-[Introduction](https://psboonstra.github.io/PH345_W2025/Slides/Introduction/Introduction.html#/title-slide)
 --->
 
-Introduction
+[Introduction](https://psboonstra.github.io/PH345_W2025/Slides/Introduction/Introduction.html#/title-slide)
 
 Scatterplots
 
