@@ -354,10 +354,10 @@ Separate data for northern and southern hemispheres
 
 temps_southern <- 
   bind_cols(hemi = "Southern",
-            read_csv("../../GlobalTemps/temp_southern.csv", skip = 4))
+            read_csv("../../GlobalTemps/temp_southern.csv"))
 temps_northern <-
   bind_cols(hemi = "Northern",
-            read_csv("../../GlobalTemps/temp_northern.csv", skip = 4))
+            read_csv("../../GlobalTemps/temp_northern.csv"))
 
 ggplot(temps_northern) +
   geom_point(aes(x = Year, y = Anomaly), size = 1) + 
@@ -584,6 +584,54 @@ Scan and commentary from <https://junkcharts.typepad.com/junk_charts/2022/12/the
 :::{.speaker-notes}
 What is the purpose? Hard to know whether blue users have a lot of followers; would expect time bias but there doesn't seem to be one (no funnel effect); why are some points labeled?
 :::
+
+
+## Code Together Task
+
+
+**No Spice**: Make the Global Temperature Anomaly plots on slide 24
+
+**Weak Sauce**: Make one of the plots on slides 25-28
+
+**Medium Spice**: Make one of the plots on slides 30-34
+
+**Dim Mak**: Make the plot on the next slide
+
+
+
+## Detroit Temperatures, 1965-2024
+
+```{r}
+#| message: false
+#| echo: false
+#| out-width: 150%
+#| fig-width: 12.85714
+
+detroit_temps <- 
+  bind_cols(city = "Detroit",
+            read_csv("../../CityTemps/detroit.csv", skip = 4)) %>%
+  filter(Value != -99) %>%
+  separate_wider_position(cols = Date, widths = c("Year" = 4, "Month"= 2)) %>%
+  mutate(Year = factor(Year), 
+         MonthNum = as.numeric(Month),
+         # Map integers to month abbrevations:
+         MonthFct = c("Jan","Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct","Nov", "Dec")[MonthNum] %>% fct_inorder(ordered = T))
+
+detroit_temps_avg <-
+  detroit_temps %>%
+  group_by(MonthFct) %>%
+  summarize(Value = mean(Value))
+
+ggplot(detroit_temps,
+       aes(x = MonthFct, y = Value)) + 
+  geom_line(aes(group = Year), alpha = 0.35) + 
+  geom_line(data = filter(detroit_temps, Year == "2024"),  aes(group = 1), color = "darkred", size = 2) + 
+  geom_line(data = detroit_temps_avg,  aes(group = 1), linetype = "dashed", size = 2) +
+  labs(x = NULL, y = "Temp (F)") +
+  theme(text = element_text(size = 24))
+```
+
+Faint lines = Year; Dark red line = 2024; Dashed line = Average
 
 
 ## References
