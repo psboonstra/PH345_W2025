@@ -14,7 +14,7 @@ editor: source
 
 [Introduction](https://psboonstra.github.io/PH345_W2025/Slides/Introduction/Introduction.html#/title-slide)
 
-Scatterplots
+[Scatterplots](https://psboonstra.github.io/PH345_W2025/Slides/Scatterplots/Scatterplots.html#/title-slide)
 
 Aesthetics
 
