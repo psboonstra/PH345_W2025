@@ -29,6 +29,8 @@ knitr::opts_chunk$set(
 out2fig = function(out.width, out.width.default = 0.7, fig.width.default = 6) {
   fig.width.default * out.width / out.width.default 
 }
+code_flag = TRUE;# Set to true and recompile after class
+
 ```
 
 ## Edward R Tufte (1942-)
@@ -349,22 +351,36 @@ Separate data for northern and southern hemispheres
 ```{r}
 #| message: false
 #| echo: false
+temps_southern <- read_csv("../../GlobalTemps/temp_southern.csv")
+temps_northern <- read_csv("../../GlobalTemps/temp_northern.csv")
+```
+
+::: panel-tabset
+### Plot
+
+```{r}
+#| message: false
+#| echo: false
 #| out-width: 130%
 #| fig-width: 11.14286
+#| label: northern_hemisphere
 
-temps_southern <- 
-  bind_cols(hemi = "Southern",
-            read_csv("../../GlobalTemps/temp_southern.csv"))
-temps_northern <-
-  bind_cols(hemi = "Northern",
-            read_csv("../../GlobalTemps/temp_northern.csv"))
-
+# temps_northern is the object name I chose
 ggplot(temps_northern) +
   geom_point(aes(x = Year, y = Anomaly), size = 1) + 
   scale_x_continuous(name = NULL, expand = expansion(0.01)) +
   scale_y_continuous(name = "Temperature Anomaly (C)", n.breaks = 6) + 
   theme(text = element_text(size = 24))
 ```
+
+### Code
+
+```{r}
+#| label: northern_hemisphere
+#| echo: !expr code_flag
+#| eval: false
+```
+:::
 
 Average temperature anomalies in the northern hemisphere over time
 
@@ -374,11 +390,16 @@ Average temperature anomalies in the northern hemisphere over time
 
 ## Connected lines
 
+::: panel-tabset
+### Plot
+
 ```{r}
 #| message: false
 #| echo: false
 #| out-width: 130%
 #| fig-width: 11.14286
+#| label: northern_hemisphere_connected
+
 ggplot(temps_northern) +
   geom_point(aes(x = Year, y = Anomaly), size = 1) + 
   geom_line(aes(x = Year, y = Anomaly)) +
@@ -386,6 +407,15 @@ ggplot(temps_northern) +
   scale_y_continuous(name = "Temperature Anomaly (C)", n.breaks = 6) + 
   theme(text = element_text(size = 24))
 ```
+
+### Code
+
+```{r}
+#| label: northern_hemisphere_connected
+#| echo: !expr code_flag
+#| eval: false
+```
+:::
 
 Emphasis on interyear variability
 
@@ -395,11 +425,15 @@ Emphasis on interyear variability
 
 ## Smooth interpolation
 
-```{r, message = FALSE, echo = FALSE}
+::: panel-tabset
+### Plot
+
+```{r}
 #| message: false
 #| echo: false
 #| out-width: 130%
 #| fig-width: 11.14286
+#| label: northern_hemisphere_smooth
 
 ggplot(temps_northern) +
   geom_point(aes(x = Year, y = Anomaly), size = 1) + 
@@ -409,6 +443,15 @@ ggplot(temps_northern) +
   theme(text = element_text(size = 24))
 ```
 
+### Code
+
+```{r}
+#| label: northern_hemisphere_smooth
+#| echo: !expr code_flag
+#| eval: false
+```
+:::
+
 Emphasis on trend
 
 ::: {style="font-size: 75%;"}
@@ -417,9 +460,15 @@ Emphasis on trend
 
 ## Bars
 
+::: panel-tabset
+### Plot
+
 ```{r}
+#| message: false
+#| echo: false
 #| out-width: 130%
 #| fig-width: 11.14286
+#| label: northern_hemisphere_bars
 
 ggplot(temps_northern) +
   geom_col(aes(x = Year, y = Anomaly), position = "dodge") + 
@@ -427,6 +476,16 @@ ggplot(temps_northern) +
   scale_y_continuous(name = "Temperature Anomaly (C)", n.breaks = 6) + 
   theme(text = element_text(size = 24))
 ```
+
+### Code
+
+```{r}
+#| label: northern_hemisphere_bars
+#| echo: !expr code_flag
+#| eval: false
+```
+:::
+
 
 Emphasis on positive vs negative deviation
 
@@ -436,9 +495,15 @@ Emphasis on positive vs negative deviation
 
 ## Ribbon
 
+::: panel-tabset
+### Plot
+
 ```{r}
+#| message: false
+#| echo: false
 #| out-width: 130%
 #| fig-width: 11.14286
+#| label: northern_hemisphere_ribbon
 
 ggplot(temps_northern) +
   geom_ribbon(aes(x = Year, ymin = 0, ymax = Anomaly), alpha = 0.6) + 
@@ -446,6 +511,15 @@ ggplot(temps_northern) +
   scale_y_continuous(name = "Temperature Anomaly (C)", n.breaks = 6) + 
   theme(text = element_text(size = 24))
 ```
+
+### Code
+
+```{r}
+#| label: northern_hemisphere_ribbon
+#| echo: !expr code_flag
+#| eval: false
+```
+:::
 
 Emphasis on positive vs negative deviation, also on time spent above or below
 
@@ -459,13 +533,22 @@ Emphasis on positive vs negative deviation, also on time spent above or below
 
 ## Northern, Southern hemispheres
 
+
+::: panel-tabset
+### Plot
+
 ```{r}
 #| message: false
 #| echo: false
 #| out-width: 130%
 #| fig-width: 11.14286
+#| label: both_hemispheres
+
 temps <-
-  bind_rows(temps_southern, temps_northern)
+  bind_rows(
+    bind_cols(hemi = "Southern", temps_southern), 
+    bind_cols(hemi = "Northern", temps_northern)
+  )
 
 ggplot(temps) +
   geom_point(aes(x = Year, y = Anomaly, color = hemi), size = 1) + 
@@ -477,17 +560,32 @@ ggplot(temps) +
         legend.position.inside = c(0.15, 0.7))
 ```
 
+### Code
+
+```{r}
+#| label: both_hemispheres
+#| echo: !expr code_flag
+#| eval: false
+```
+:::
+
+
 ::: {style="font-size: 75%;"}
 <https://www.ncei.noaa.gov/access/monitoring/climate-at-a-glance/global/time-series>
 :::
 
 ## 
 
+
+::: panel-tabset
+### Plot
+
 ```{r}
 #| message: false
 #| echo: false
 #| out-width: 130%
 #| fig-width: 11.14286
+#| label: both_hemispheres_step
 
 ggplot(temps) +
   geom_point(aes(x = Year, y = Anomaly, color = hemi), size = 1) + 
@@ -500,17 +598,32 @@ ggplot(temps) +
         legend.position.inside = c(0.15, 0.7))
 ```
 
+
+### Code
+
+```{r}
+#| label: both_hemispheres_step
+#| echo: !expr code_flag
+#| eval: false
+```
+:::
+
+
 ::: {style="font-size: 75%;"}
 <https://www.ncei.noaa.gov/access/monitoring/climate-at-a-glance/global/time-series>
 :::
 
 ## 
 
+::: panel-tabset
+### Plot
+
 ```{r}
 #| message: false
 #| echo: false
 #| out-width: 130%
 #| fig-width: 11.14286
+#| label: both_hemispheres_smooth
 
 ggplot(temps) +
   geom_point(aes(x = Year, y = Anomaly, color = hemi), size = 1) + 
@@ -523,15 +636,31 @@ ggplot(temps) +
         legend.position.inside = c(0.15, 0.7))
 ```
 
+
+### Code
+
+```{r}
+#| label: both_hemispheres_smooth
+#| echo: !expr code_flag
+#| eval: false
+```
+:::
+
 ::: {style="font-size: 75%;"}
 <https://www.ncei.noaa.gov/access/monitoring/climate-at-a-glance/global/time-series>
 :::
 
 ## 
 
+::: panel-tabset
+### Plot
+
 ```{r}
+#| message: false
+#| echo: false
 #| out-width: 130%
 #| fig-width: 11.14286
+#| label: both_hemispheres_bars
 
 ggplot(temps) +
   geom_col(aes(x = Year, y = Anomaly, fill = hemi), position = "dodge") + 
@@ -543,15 +672,32 @@ ggplot(temps) +
         legend.position.inside = c(0.15, 0.7))
 ```
 
+
+### Code
+
+```{r}
+#| label: both_hemispheres_bars
+#| echo: !expr code_flag
+#| eval: false
+```
+:::
+
+
 ::: {style="font-size: 75%;"}
 <https://www.ncei.noaa.gov/access/monitoring/climate-at-a-glance/global/time-series>
 :::
 
 ## 
 
+::: panel-tabset
+### Plot
+
 ```{r}
+#| message: false
+#| echo: false
 #| out-width: 130%
 #| fig-width: 11.14286
+#| label: both_hemispheres_ribbon
 
 ggplot(temps) +
   geom_ribbon(aes(x = Year, ymin = 0, ymax = Anomaly, fill = hemi), alpha = 0.6) + 
@@ -562,6 +708,17 @@ ggplot(temps) +
         legend.position = "inside",
         legend.position.inside = c(0.15, 0.7))
 ```
+
+
+### Code
+
+```{r}
+#| label: both_hemispheres_ribbon
+#| echo: !expr code_flag
+#| eval: false
+```
+:::
+
 
 ::: {style="font-size: 75%;"}
 <https://www.ncei.noaa.gov/access/monitoring/climate-at-a-glance/global/time-series>
@@ -601,16 +758,26 @@ What is the purpose? Hard to know whether blue users have a lot of followers; wo
 
 ## Detroit Temperatures, 1965-2024
 
+
+::: panel-tabset
+### Plot
+
 ```{r}
 #| message: false
 #| echo: false
 #| out-width: 150%
 #| fig-width: 12.85714
+#| label: detroit_temps
 
 detroit_temps <- 
   bind_cols(city = "Detroit",
+            # Your path will be different than mine: this is the
+            # relative path with respect to my slides
+            # I'm using skip = 4 to skip the first 4 lines
             read_csv("../../CityTemps/detroit.csv", skip = 4)) %>%
+  # One temperature is -99. Presumably this is a flag for missingness
   filter(Value != -99) %>%
+  # Split up the date variable
   separate_wider_position(cols = Date, widths = c("Year" = 4, "Month"= 2)) %>%
   mutate(Year = factor(Year), 
          MonthNum = as.numeric(Month),
@@ -630,6 +797,16 @@ ggplot(detroit_temps,
   labs(x = NULL, y = "Temp (F)") +
   theme(text = element_text(size = 24))
 ```
+
+
+### Code
+
+```{r}
+#| label: detroit_temps
+#| echo: !expr code_flag
+#| eval: false
+```
+:::
 
 Faint lines = Year; Dark red line = 2024; Dashed line = Average
 

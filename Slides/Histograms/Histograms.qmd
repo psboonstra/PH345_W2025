@@ -30,6 +30,7 @@ knitr::opts_chunk$set(
 out2fig = function(out.width, out.width.default = 0.7, fig.width.default = 6) {
   fig.width.default * out.width / out.width.default 
 }
+code_flag = FALSE;# Set to true and recompile after class
 ```
 
 
@@ -91,7 +92,7 @@ ultrarunning$pb100k_dec
 
 Appropriate for summarizing a set of numbers (continous variables)
 
-1.  Choose a bin size and a center value, e.g. one hour bins centered at the integers would be denoted as $(5.5, 6.5]$, $(6.5, 7.5]$, $(7.5, 8.5]$, etc. Bins must be non-overlapping. Calculate enough bins to completely cover data
+1.  Choose a bin size and a center value, e.g. one hour bins centered at the integers would be denoted as $(5.5, 6.5]$, $(6.5, 7.5]$, $(7.5, 8.5]$, etc. Bins will be non-overlapping. Calculate enough bins to completely cover data
 
 2.  Assign each runner to a bin, e.g. 13.50 goes into the $(12.5, 13.5]$ bin and 13.51 goes in to the $(13.5, 14.5]$ bin
 
@@ -154,7 +155,7 @@ ggplot(ultrarunning) +
 
 ```{r}
 #| label: histogram
-#| echo: true
+#| echo: !expr code_flag
 #| eval: false
 ```
 :::
@@ -243,17 +244,31 @@ Generally no reason not to show both.
 
 ## 
 
+
+::: panel-tabset
+### Plot
+
 ```{r}
 #| out-width: 130%
 #| fig-width: 11.14286
+#| label: histogram_and_density
+
 ggplot(ultrarunning) + 
   geom_histogram(aes(x = pb100k_dec, y = after_stat(density)), binwidth = 1, center = 10, fill = "grey", color = "black") + 
   geom_density(aes(x = pb100k_dec)) +
   labs(x = "Personal best time (hours)",
-       y = "Count") +
+       y = "Density") +
   theme(text = element_text(size = 24))
 ```
 
+### Code
+
+```{r}
+#| label: histogram_and_density
+#| echo: !expr code_flag
+#| eval: false
+```
+:::
 
 ## Mary E Spear
 
@@ -356,9 +371,10 @@ p1 +
 ### Plot
 
 ```{r}
-#| label: boxplot
 #| out-width: 130%
 #| fig-width: 11.14286
+#| label: boxplot
+
 ggplot(ultrarunning) +
   geom_boxplot(aes(x = pb100k_dec)) +
   labs(x = "Personal best time (hours)") +
@@ -371,17 +387,21 @@ ggplot(ultrarunning) +
 
 ```{r}
 #| label: boxplot
-#| echo: true
+#| echo: !expr code_flag
 #| eval: false
 ```
 :::
 
 ## Useful to include individual points
 
+::: panel-tabset
+### Plot
+
 ```{r}
-#| label: boxplot2
 #| out-width: 130%
 #| fig-width: 11.14286
+#| label: boxplot2
+
 ggplot(ultrarunning) +
   geom_boxplot(aes(x = pb100k_dec), outlier.shape = NA) + # <1>
   geom_jitter(aes(x = pb100k_dec, y = 0), width = 0, height = 0.25) + # <2>
@@ -389,6 +409,16 @@ ggplot(ultrarunning) +
   scale_y_continuous(breaks = NULL, name = NULL, limits = c(-1, 1)) +
   theme(text = element_text(size = 24))
 ```
+
+### Code
+
+```{r}
+#| label: boxplot2
+#| echo: !expr code_flag
+#| eval: false
+```
+:::
+
 
 Random vertical jitter allows to see multiple datapoints with same value
 
@@ -407,6 +437,9 @@ better provides more accurate representation of distribution, like density plot
 
 ## Simple violin plot
 
+::: panel-tabset
+### Plot
+
 ```{r}
 #| label: violin1
 #| out-width: 130%
@@ -421,15 +454,41 @@ p1 +
   geom_hline(yintercept = 0, linetype = "dashed")
 ```
 
+### Code
+
+```{r}
+#| label: violin1
+#| echo: !expr code_flag
+#| eval: false
+```
+:::
+
+
 ## With boxplot on top
+
+::: panel-tabset
+### Plot
 
 ```{r}
 #| label: violin2
 #| out-width: 130%
 #| fig-width: 11.14286
+
+# See how p1 is created on previous slide
 p1 + 
   geom_boxplot(width = 0.25)
 ```
+
+### Code
+
+```{r}
+#| label: violin2
+#| echo: !expr code_flag
+#| eval: false
+```
+:::
+
+
 
 ## With datapoints on top
 
@@ -516,7 +575,7 @@ ggplot(ultrarunning) +
 
 ```{r}
 #| label: barchart
-#| echo: true
+#| echo: !expr code_flag
 #| eval: false
 ```
 
@@ -524,7 +583,11 @@ ggplot(ultrarunning) +
 
 ## Stacked Bar Chart
 
+::: panel-tabset
+### Plot
+
 ```{r}
+#| label: barchart_stacked
 #| out-width: 130%
 #| fig-width: 11.14286
 ggplot(ultrarunning) +
@@ -535,9 +598,23 @@ ggplot(ultrarunning) +
   theme(text = element_text(size = 24))
 ```
 
-## Filled Bar Chart
+### Code
 
 ```{r}
+#| label: barchart_stacked
+#| echo: !expr code_flag
+#| eval: false
+```
+
+:::
+
+## Filled Bar Chart
+
+::: panel-tabset
+### Plot
+
+```{r}
+#| label: barchart_filled
 #| out-width: 130%
 #| fig-width: 11.14286
 ggplot(ultrarunning) +
@@ -548,9 +625,23 @@ ggplot(ultrarunning) +
   theme(text = element_text(size = 24))
 ```
 
-## Dodged Bar Chart
+### Code
 
 ```{r}
+#| label: barchart_filled
+#| echo: !expr code_flag
+#| eval: false
+```
+
+:::
+
+## Dodged Bar Chart
+
+::: panel-tabset
+### Plot
+
+```{r}
+#| label: barchart_dodged
 #| out-width: 130%
 #| fig-width: 11.14286
 ggplot(ultrarunning) +
@@ -561,6 +652,15 @@ ggplot(ultrarunning) +
   theme(text = element_text(size = 24))
 ```
 
+### Code
+
+```{r}
+#| label: barchart_dodged
+#| echo: !expr code_flag
+#| eval: false
+```
+
+:::
 
 ## Stacked vs. Filled vs. Dodged
 
@@ -637,9 +737,13 @@ All are different flavors of bar charts
 
 ## Bivariate extensions
 
+::: panel-tabset
+### Plot
+
 ```{r}
 #| out-width: 130%
 #| fig-width: 11.14286
+#| label: bivariate_violin1
 ggplot(ultrarunning %>% filter(sex_char != "Unknown"), aes(x = pb100k_dec, y = sex_char)) +
   geom_violin(fill = "grey70") + 
   geom_boxplot(width = 0.25) +
@@ -648,12 +752,26 @@ ggplot(ultrarunning %>% filter(sex_char != "Unknown"), aes(x = pb100k_dec, y = s
   theme(text = element_text(size = 24))
 ```
 
+### Code
+
+```{r}
+#| label: barchart_violin1
+#| echo: !expr code_flag
+#| eval: false
+```
+
+:::
+
 
 ## Bivariate extensions
+
+::: panel-tabset
+### Plot
 
 ```{r}
 #| out-width: 130%
 #| fig-width: 11.14286
+#| label: bivariate_violin2
 ggplot(ultrarunning, aes(x = pb100k_dec, y = pb_surface_name)) +
   geom_violin(fill = "grey70") + 
   geom_boxplot(width = 0.25) +
@@ -662,11 +780,25 @@ ggplot(ultrarunning, aes(x = pb100k_dec, y = pb_surface_name)) +
   theme(text = element_text(size = 24))
 ```
 
+### Code
+
+```{r}
+#| label: barchart_violin2
+#| echo: !expr code_flag
+#| eval: false
+```
+
+:::
+
 ## Bivariate extensions
+
+::: panel-tabset
+### Plot
 
 ```{r}
 #| out-width: 130%
 #| fig-width: 11.14286
+#| label: bivariate_violin3
 ggplot(ultrarunning, aes(x = pb_surface_name, y = pb100k_dec)) +
   geom_violin(fill = "grey70") + 
   geom_boxplot(width = 0.25) +
@@ -674,6 +806,16 @@ ggplot(ultrarunning, aes(x = pb_surface_name, y = pb100k_dec)) +
   scale_x_discrete(name = NULL) + 
   theme(text = element_text(size = 24))
 ```
+
+### Code
+
+```{r}
+#| label: barchart_violin3
+#| echo: !expr code_flag
+#| eval: false
+```
+
+:::
 
 
 ## Layering in `ggplot`
@@ -701,6 +843,23 @@ Some situations when you would want to layer:
   - When single layer has critical weakness / deficiency (*Avoid distorting what the data say*)
   - When you want to highlight both granular and aggregate components of the data (*Reveal the data at several levels of detail, from broad overview to fine structure*)
   - To anchor your data (layer A) within context of reference / other data (layer B) (*Encourage comparison between different pieces of data*)
+
+
+
+## Code Together Task
+
+
+**No Spice**: Make the histogram on slide 9;
+
+**Weak Sauce**: Make the boxplot on slide 23;
+
+**Medium Spice**: Make the layered violin plots on slides 26 or 27;
+
+**Yoga Flame**: Make the layered Density+Histogram on slide 15 (hint: use `after_stat` to 
+get the correct y-axis for the histogram); or the layered boxplot on slide 24 (hint:
+use `geom_jitter` instead of `geom_point`); or one of the barcharts on slides 32, 33, or 34 (hint: you will need to use `case_when` to create some character variables before making the plots);
+
+**Dim Mak**: Make one of the bivariate violin plots on slides 37--39;
 
 
 ## References

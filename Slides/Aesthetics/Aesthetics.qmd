@@ -66,6 +66,7 @@ For each of 9 plots, guess group B's numerical proportion and rank. Enter your g
 
 ![](frame.png)
 
+<https://tinyurl.com/ph345aesthetics>
 
 ## Plot 1
 
@@ -83,7 +84,8 @@ data1 <-
 p1 <- ggplot(data1, aes(x="", y=value, fill=group)) +
   geom_bar(stat="identity", width=1, color="white") +
   coord_polar("y", start=0) +
-  theme_void(base_size = 14)
+  theme_void(base_size = 14) + 
+  labs(x = NULL, fill = NULL)
 p1
 ```
 
@@ -101,7 +103,8 @@ p2 <- ggplot(data2, aes(x="", y=value, fill=group)) +
   coord_polar("y", start=0) +
   scale_fill_manual(values = scales::hue_pal()(5), 
                     breaks = LETTERS[1:5]) +
-  theme_void(base_size = 14)
+  theme_void(base_size = 14) + 
+  labs(x = NULL, fill = NULL)
 p2
 ```
 
@@ -119,7 +122,8 @@ p3 <- ggplot(data3, aes(x = "", y = value, fill = group)) +
   geom_bar(stat = "identity", width = 1, color = "white") +
   scale_x_discrete(name = NULL) + 
   theme(text = element_text(size = 14), 
-        axis.ticks.x = element_blank())
+        axis.ticks.x = element_blank()) +
+  labs(y = NULL, fill = NULL)
 p3
 ```
 
@@ -135,7 +139,8 @@ data4 <-
 
 p4 <- ggplot(data4, aes(x = group, y = value)) +
   geom_bar(stat = "identity", width = 1, color = "white") +
-  theme(text = element_text(size = 14))
+  theme(text = element_text(size = 14)) + 
+  labs(x = NULL, y = NULL)
 p4
 ```
 
@@ -151,7 +156,8 @@ data5 <-
 
 p5 <- ggplot(data5, aes(x = group, y = value)) +
   geom_bar(stat = "identity", width = 1, color = "white") +
-  theme(text = element_text(size = 14))
+  theme(text = element_text(size = 14)) + 
+  labs(x = NULL, y = NULL)
 p5
 ```
 
@@ -167,7 +173,8 @@ data6 <-
 p6 <- ggplot(data6, aes(x = group, y = value)) +
   geom_point(size = 5) +
   scale_y_continuous(limits = c(0, 0.42)) +
-  theme(text = element_text(size = 14))
+  theme(text = element_text(size = 14)) + 
+  labs(x = NULL, y = NULL)
 p6
 ```
 
@@ -185,7 +192,8 @@ p7 <- ggplot(data7, aes(x = group, y = value)) +
   geom_point(size = 5) +
   scale_y_continuous(limits = c(0, max(data7$value))) +
   theme(text = element_text(size = 14))
-p7
+p7 + 
+  labs(x = NULL, y = NULL)
 ```
 
 ## Plot 8
@@ -199,7 +207,8 @@ data8 <-
 
 p8 <- ggplot(data8) + 
   geom_point(aes(x = group, color = value), y = 1, size = 5) +
-  coord_cartesian(ylim = c(0.9, 1.1))
+  coord_cartesian(ylim = c(0.9, 1.1)) + 
+  labs(x = NULL, color = NULL)
 p8
 ```
 
@@ -215,11 +224,15 @@ data9 <-
 
 p9 <- ggplot(data9) + 
   geom_point(aes(x = group, size = value), y = 1) +
-  coord_cartesian(ylim = c(0.9, 1.1))
+  coord_cartesian(ylim = c(0.9, 1.1)) + 
+  labs(x = NULL, size = NULL)
 p9
 ```
 
-## True values
+## True values of B
+
+::::: columns
+::: {.column width="75%"}
 
 ```{r}
 all_Bs <- 
@@ -241,27 +254,29 @@ true_ranks <- all_Bs %>% pivot_wider(id_cols = group, names_from = dataset, valu
 ```
 
 
-::::: columns
-::: {.column width="70%"}
-```{r, fig.height = 8}
-plot_grid(p1, p2, p3, p4, p5, p6, p7, p8, p9, labels = 1:9)
+```{r}
+#| out-width: 130%
+#| fig-width: 11.14286
+plot_grid(p1, p2, p3, p4, p5, p6, p7, p8, p9, labels = 1:9, ncol = 3)
 ```
 
 :::
 
-::: {.column width="30%"}
+::: {.column width="25%"}
+
 ```{r}
+#| eval: false
 all_Bs %>%
   select(`Plot` = dataset, 
-         `True value B` = value, 
-         `True rank B` = rank) %>% kable(digits = 3)
+         `Value` = value, 
+         `Rank` = rank) %>% kable(digits = 3) %>% kableExtra::kable_styling(font_size = 24)
 ```
+
 :::
+ 
 :::::
 
-
-
-## 
+## Truth minus Guess (Bias)
 
 ```{r}
 #| echo: false
@@ -274,7 +289,8 @@ bias_values <-
   (class_responses %>% select(seq(2, 19, by = 2)) %>% rename_all(~c("1", "2", "3", "4", "5", "6", "7", "8", "9")) - 
      # stack multiple copies of true_values, matching number of rows of class_responses:
      bind_rows(true_values %>% slice(rep(1:n(), nrow(class_responses))))) %>%
-  pivot_longer(everything()) 
+  pivot_longer(everything()) %>%
+  mutate(value = -1 * value)
 
 bias_ranks <- 
   # class estimates of ranks
@@ -285,6 +301,18 @@ bias_ranks <-
 
 
 ggplot(bias_values, aes(x = name, y = value, color = name)) + 
+  geom_jitter(height = 0, width = 0.25, alpha = 0.8, size = 2) + 
+  labs(x = "Plot", y = "Bias") +
+  guides(color = "none") + 
+  theme(text = element_text(size = 17))
+```
+
+## Truth minus Guess (Ranks)
+
+```{r}
+#| echo: false
+#| include: true
+ggplot(bias_ranks, aes(x = name, y = value, color = name)) + 
   geom_jitter(height = 0, width = 0.25, alpha = 0.8, size = 2) + 
   labs(x = "Plot", y = "Bias") +
   guides(color = "none") + 
