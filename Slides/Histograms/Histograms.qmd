@@ -30,7 +30,7 @@ knitr::opts_chunk$set(
 out2fig = function(out.width, out.width.default = 0.7, fig.width.default = 6) {
   fig.width.default * out.width / out.width.default 
 }
-code_flag = FALSE;# Set to true and recompile after class
+code_flag = TRUE;# Set to true and recompile after class
 ```
 
 
@@ -590,6 +590,7 @@ ggplot(ultrarunning) +
 #| label: barchart_stacked
 #| out-width: 130%
 #| fig-width: 11.14286
+# See how pb_surface_name and sex_char are created on slide 31
 ggplot(ultrarunning) +
   geom_bar(aes(x = pb_surface_name, fill = sex_char)) +
   labs(x = "Surface type",
@@ -617,6 +618,7 @@ ggplot(ultrarunning) +
 #| label: barchart_filled
 #| out-width: 130%
 #| fig-width: 11.14286
+# See how pb_surface_name and sex_char are created on slide 31
 ggplot(ultrarunning) +
   geom_bar(aes(x = pb_surface_name, fill = sex_char), position = "fill") +
   labs(x = "Surface type",
@@ -644,6 +646,9 @@ ggplot(ultrarunning) +
 #| label: barchart_dodged
 #| out-width: 130%
 #| fig-width: 11.14286
+# See how pb_surface_name and sex_char are created on slide 31
+# preserve = "single" maintains a constat bar width, even when there are empty
+# categories
 ggplot(ultrarunning) +
   geom_bar(aes(x = pb_surface_name, fill = sex_char), position = position_dodge(preserve = "single")) +
   labs(x = "Surface type",
@@ -755,7 +760,7 @@ ggplot(ultrarunning %>% filter(sex_char != "Unknown"), aes(x = pb100k_dec, y = s
 ### Code
 
 ```{r}
-#| label: barchart_violin1
+#| label: bivariate_violin1
 #| echo: !expr code_flag
 #| eval: false
 ```
@@ -783,7 +788,7 @@ ggplot(ultrarunning, aes(x = pb100k_dec, y = pb_surface_name)) +
 ### Code
 
 ```{r}
-#| label: barchart_violin2
+#| label: bivariate_violin2
 #| echo: !expr code_flag
 #| eval: false
 ```
@@ -810,7 +815,7 @@ ggplot(ultrarunning, aes(x = pb_surface_name, y = pb100k_dec)) +
 ### Code
 
 ```{r}
-#| label: barchart_violin3
+#| label: bivariate_violin3
 #| echo: !expr code_flag
 #| eval: false
 ```
