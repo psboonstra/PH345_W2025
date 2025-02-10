@@ -30,6 +30,8 @@ knitr::opts_chunk$set(
 out2fig = function(out.width, out.width.default = 0.7, fig.width.default = 6) {
   fig.width.default * out.width / out.width.default 
 }
+code_flag = FALSE;# Set to true and recompile after class
+
 ```
 
 ## *Farbtafel*, Paul Klee (1930)
@@ -444,9 +446,9 @@ Figure 15 from Mackinlay (1986)
 Figure 2b from Wong (2010b)
 :::
 
-## Example 5
+## Example 5 {.nostretch}
 
-![](Fig42Wilke.png){height=150%}
+![](Fig42Wilke.png){width=50%}
 
 What regions of the US experienced greatest population growth?
 
@@ -454,9 +456,186 @@ What regions of the US experienced greatest population growth?
 Figure 4.2, Wilke (2019)
 :::
 
+## Example 6 {.nostretch}
+
+![](fig32malawi.png){width=55%}
+
+How do Malawi's teachers positive teaching practices compare to those of other Sub-Saharan African countries?
+
+::: {style="font-size: 75%;"}
+Figure 3.2, Asim (2024)
+:::
+
+
+## Example 7 {.nostretch}
+
+![](fig52malawiA.png){width=55%}
+
+How do entrace and pass rates for Primary School Leaving Certificate Examinations (PSLCE) compare between boys and girls in Malawi?
+
+::: {style="font-size: 75%;"}
+Figure 5.2, Asim (2024)
+:::
+
+## Example 7 {.nostretch}
+
+![](fig52malawiB.png){width=55%}
+
+How do entrace and pass rates for Primary School Leaving Certificate Examinations (PSLCE) compare between boys and girls in Malawi?
+
+::: {style="font-size: 75%;"}
+Figure 5.2, Asim (2024)
+:::
+
+## Example 7 {.nostretch}
+
+> Ultimately,
+girls are 6 percent less likely than boys to enter the Primary School Leaving
+Certificate Examinations (PSLCE) and 13 percent less likely than boys to pass
+(refer to figure 5.2, panel b).
+
+## Example 8 {.nostretch}
+
+![](fig34SEAsia){width=60%}
+
+> Number of
+deployments is calculated as average for Bangladeshi, Indian, Nepali, Pakistani, and
+Sri Lankan labor migrants in their respective top five destination countries... remittances are defined as total amount of
+remittances that flow into Bangladesh, India, Nepal, and Pakistan.
+
+::: {style="font-size: 75%;"}
+Figure 3.4, Ahmed (2022)
+:::
+
+## Example 8
+
+Questions:
+
+1. When was the amount of remittances into sending countries at its highest?
+2. For every 100 deploying migrants in 2006, how many deployed in 2015?
+3. How long did it take to recover to 2006 levels in terms of deploying migrants?
+
+## Phil's Recreation of Figure 3.4
+
+```{r}
+#| echo: false
+#| eval: false
+library(tidyverse)
+migration <- read_csv("Slides/Aesthetics/migration.csv")
+```
+
+```{r}
+#| echo: false
+#| eval: true
+library(tidyverse)
+migration <- read_csv("migration.csv")
+```
+
+::: panel-tabset
+### Plot
+
+```{r}
+#| label: remittance1
+ggplot(migration) + 
+  geom_line(aes(x = year, y = pct_change_diff, color = variable), linewidth = 1) +
+  geom_hline(yintercept = 0, linetype = "dashed") + 
+  geom_vline(xintercept = 2008, linetype = "dashed") + 
+  scale_x_continuous(breaks = 2007:2015, minor_breaks = NULL, name = NULL) + 
+  scale_y_continuous(name = "Annual growth rate (%)", breaks = seq(-100, 100, by = 20)) +
+  scale_color_manual(values = c("#ED6B36", "#78ACD9"), name = NULL, labels = c("Number of deployments (from sending)", "Remittances (into sending)")) +
+  theme(legend.position = "bottom",
+        axis.line = element_line(),
+        panel.background = element_blank())
+```
+
+### Code
+
+```{r}
+#| label: remittance1
+#| echo: !expr code_flag
+#| eval: false
+```
+:::
+
+
+Plotting lines emphasizes change between points: the change in the annual growth rate. How easy is this to interpret?
+
+## 
+
+```{r}
+ggplot(migration) + 
+  geom_point(aes(x = year, y = pct_change_diff, color = variable)) +
+  geom_hline(yintercept = 0, linetype = "dashed") + 
+  geom_vline(xintercept = 2008, linetype = "dashed") + 
+  scale_x_continuous(breaks = 2007:2015, minor_breaks = NULL, name = NULL) + 
+  scale_y_continuous(name = "Annual growth rate (%)", breaks = seq(-100, 100, by = 20)) +
+  scale_color_manual(values = c("#ED6B36", "#78ACD9"), name = NULL, labels = c("Number of deployments (from sending)", "Remittances (into sending)")) +
+  theme(legend.position = "bottom",
+        axis.line = element_line(),
+        panel.background = element_blank())
+```
+
+##
+
+
+
+
+::: panel-tabset
+### Plot
+
+```{r}
+#| label: remittance2
+migration <- 
+  migration %>% 
+  mutate(pct_change_mult = 1 + pct_change_diff / 100) %>% 
+  group_by(variable) %>% 
+  mutate(pct_change_mult_2006 = 100 * cumprod(pct_change_mult) - 100) %>%
+  ungroup()
+
+ggplot(migration) + 
+  geom_line(aes(x = year, y = pct_change_mult_2006, color = variable), linewidth = 1) +
+  geom_hline(yintercept = 0, linetype = "dashed") + 
+  geom_vline(xintercept = 2008, linetype = "dashed") + 
+  scale_x_continuous(breaks = 2007:2015, minor_breaks = NULL, name = NULL) + 
+  scale_y_continuous(name = "% Change from 2006", breaks = seq(-100, 100, by = 20)) +
+  scale_color_manual(values = c("#ED6B36", "#78ACD9"), name = NULL, labels = c("Number of deployments (from sending)", "Remittances (into sending)")) +
+  theme(legend.position = "bottom",
+        axis.line = element_line(),
+        panel.background = element_blank())
+```
+
+### Code
+
+```{r}
+#| label: remittance2
+#| echo: !expr code_flag
+#| eval: false
+```
+:::
+
+
+
+## Code Together Task
+
+
+**No Spice**: Make an approximate version of my recreation of Figure 3.4 on slide 33: focus just on the structure
+
+**Weak Sauce**: No menu options today...
+
+**Medium Spice**: Make an approximate version of my '% Change from 2006' plot on slide
+35: focus just on the structure
+
+**Yoga Flame**: Make an exact replicate of my recreation of Figure 3.4 on slide 33. I'm looking for perfection!
+
+**Dim Mak**: Make an exact replicate of my '% Change from 2006' plot on slide 35. I'm looking for perfection!
 
 
 ## References
+
+Ahmed, S.A. and Bossavie, L. eds., 2022. Toward Safer and More Productive Migration for South Asia. World Bank Publications.
+[website](https://openknowledge.worldbank.org/server/api/core/bitstreams/dd91fa20-75ed-5d0f-b3e7-69c164d298b0/content)
+
+Asim, S. and Gera, R.C., 2024. What Matters for Learning in Malawi? Evidence from the Malawi Longitudinal School Survey. World Bank Publications-Books. [website](https://openknowledge.worldbank.org/entities/publication/92b138f9-f4f1-4998-a975-bb4e8436718c)
 
 Cleveland, W.S. and McGill, R., 1985. *Graphical perception and graphical methods for analyzing scientific data.* Science, 229(4716), pp.828-833.
 
