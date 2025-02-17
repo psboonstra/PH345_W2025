@@ -20,7 +20,7 @@ editor: source
 
 [Aesthetics](https://psboonstra.github.io/PH345_W2025/Slides/Aesthetics/Aesthetics#/title-slide)
 
-Color
+[Color](https://psboonstra.github.io/PH345_W2025/Slides/Color/Color#/title-slide)
 
 Facets
 

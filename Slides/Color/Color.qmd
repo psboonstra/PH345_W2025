@@ -1,5 +1,5 @@
 ---
-title: "Appropriate use of Color"
+title: "Using Color"
 author: "Phil Boonstra"
 subtitle: "PH345: Winter 2025"
 format: 
@@ -30,6 +30,8 @@ knitr::opts_chunk$set(
 out2fig = function(out.width, out.width.default = 0.7, fig.width.default = 6) {
   fig.width.default * out.width / out.width.default 
 }
+code_flag = FALSE;# Set to true and recompile after class
+
 ```
 
 
@@ -41,9 +43,49 @@ Fatal Accident Reporting System (FARS)
 
 - Collected and reported annually from 1975. Most recent year available is 2022
 
-- Data are available at <https://www.nhtsa.gov/file-downloads?p=nhtsa/downloads/FARS/2022/National/>
 
-- For each state, I calculated the fraction of accidents that occurred in daylight and fraction of accidents that occurred in clear weather and compare across states. 
+##
+
+For each state, I calculated the following:
+
+  * Number of crashes per 1000 population (`all_crash_per_capita`)
+  * Number of crashes on nice days per 1000 population (`nice_crash_per_capita`)
+  * Number of crashes on "not nice" days per 1000 population (`not_nice_crash_per_capita`)
+  * Number of crashes on other days per 1000 population (`other_crash_per_capita`)
+  * Ratio of crashes on nice days vs crashes on not nice days (`ratio_nice_not_nice`)
+  
+##
+
+Nice day: Either Clear or Cloudy weather and Daylight light conditions
+
+Not nice day = Either Blowing Sand, Soil, Dirt, Blowing Snow, Fog, Smog, Smoke, Freezing Rain or Drizzle, Rain, Severe Crosswinds, Sleet or Hail, or Snow *or* Dark - Not Lighted, Dawn, or Dusk light conditions
+
+```{r}
+#| echo: true
+#| eval: false
+ mutate(
+    nice_conditions = 
+      WEATHERNAME %in% c("Clear","Cloudy") & LGT_CONDNAME == "Daylight",
+    not_nice_conditions = 
+      WEATHERNAME %in% c("Blowing Sand, Soil, Dirt",
+                                             "Blowing Snow",
+                                             "Fog, Smog, Smoke",
+                                             "Freezing Rain or Drizzle",
+                                             "Rain",
+                                             "Severe Crosswinds",
+                                             "Sleet or Hail",
+                                             "Snow") | 
+      LGT_CONDNAME %in% c("Dark - Not Lighted", 
+                          "Dawn", 
+                          "Dusk")
+  ) 
+```
+
+
+##
+
+- Data are available on Canvas > Datasets > FARS: `fars2022_summary.csv` and 
+`fars2022_regional_summary.csv`
 
 ##
 
@@ -51,6 +93,8 @@ Fatal Accident Reporting System (FARS)
 #| message: false
 fars2022 <- read_csv("../../FARS/FARS2022NationalCSV/accident.csv") %>%
   mutate(DAY_WEEKNAME = factor(DAY_WEEKNAME, levels = c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")))
+
+state_pops <- read_csv("../../FARS/state_pops.csv")
 
 fars2022 <-
   fars2022 %>%
@@ -64,18 +108,52 @@ fars2022 <-
     STATENAME %in% c("Arkansas", "Louisiana", "Oklahoma", "Texas") ~ "South",
     STATENAME %in% c("Arizona", "Colorado", "Idaho", "Montana", "Nevada", "New Mexico", "Utah", "Wyoming") ~ "West",
     STATENAME %in% c("Alaska", "California", "Hawaii", "Oregon", "Washington") ~ "West"
-  ))
+  )) %>%
+  mutate(
+    nice_conditions = WEATHERNAME %in% c("Clear","Cloudy") & LGT_CONDNAME == "Daylight",
+    not_nice_conditions = WEATHERNAME %in% c("Blowing Sand, Soil, Dirt","Blowing Snow","Fog, Smog, Smoke","Freezing Rain or Drizzle","Rain","Severe Crosswinds","Sleet or Hail","Snow") | 
+      LGT_CONDNAME %in% c("Dark - Not Lighted", "Dawn", "Dusk")
+  ) %>%
+  left_join(state_pops %>% select(STATE, POPESTIMATE2022))
+
 
 fars2022_summary <-
   fars2022 %>%
   group_by(STATE, STATENAME, region) %>% 
-  summarize(mean_daylight = mean(LGT_CONDNAME == "Daylight"),
-            mean_clear = mean(WEATHERNAME == "Clear")) %>%
+  summarize(
+    all_crash_per_capita = 1000 * n() / mean(POPESTIMATE2022),
+    nice_crash_per_capita = 1000 * sum(nice_conditions) / mean(POPESTIMATE2022),
+    not_nice_crash_per_capita = 1000 * sum(not_nice_conditions) / mean(POPESTIMATE2022),
+    other_crash_per_capita = 1000 * sum(!nice_conditions&!not_nice_conditions) / mean(POPESTIMATE2022),
+    ratio_nice_not_nice = sum(nice_conditions) / sum(not_nice_conditions)
+  ) %>%
   mutate(highlight_state = 
            case_when(
-             mean_daylight > 0.57 | mean_daylight < 0.35 | mean_clear < 0.60 ~ TRUE ,
+             nice_crash_per_capita < 0.014 ~ TRUE, 
+             nice_crash_per_capita < 0.025 & not_nice_crash_per_capita > 0.025 ~ TRUE, 
+             nice_crash_per_capita > 0.075 & not_nice_crash_per_capita < 0.05 ~ TRUE,
+             nice_crash_per_capita > 0.0875 ~ TRUE,
              TRUE ~ FALSE
            ))
+
+fars2022_regional_summary <-
+  fars2022 %>%
+  left_join(
+    fars2022 %>% 
+      group_by(STATENAME) %>% 
+      slice(1) %>% 
+      group_by(region) %>%
+      summarize(region_POPESTIMATE2022 = sum(POPESTIMATE2022))
+  ) %>%
+  filter(STATENAME != "Virginia") %>%
+  group_by(region) %>% 
+  summarize(
+    all_crash_per_capita = 1000 * n() / mean(region_POPESTIMATE2022),
+    nice_crash_per_capita = 1000 * sum(nice_conditions) / mean(region_POPESTIMATE2022),
+    not_nice_crash_per_capita = 1000 * sum(not_nice_conditions) / mean(region_POPESTIMATE2022),
+    other_crash_per_capita = 1000 * sum(!nice_conditions&!not_nice_conditions) / mean(POPESTIMATE2022),
+    ratio_nice_not_nice = sum(nice_conditions) / sum(not_nice_conditions)
+  )
 ```
 
 
@@ -83,15 +161,15 @@ fars2022_summary <-
 #| fig-asp: 0.5
 #| out-width: 200%
 #| fig-width: 17.14286
+#| cache: true
 
-ggplot(fars2022_summary, aes(x = mean_clear, y = mean_daylight, color = STATENAME)) + 
+ggplot(fars2022_summary, aes(x = nice_crash_per_capita, y = not_nice_crash_per_capita)) + 
   geom_point(size = 4, aes(color = STATENAME)) +  
-  scale_x_continuous(name = "Fraction of Accidents in Clear Weather") +
-  scale_y_continuous(name = "Fraction of Accidents in Daylight") +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed") + 
+  scale_x_continuous(name = "Fatal Accidents per 1000 population\n(nice conditions)") +
+  scale_y_continuous(name = "Fatal Accidents per 1000 population\n(not nice conditions)") +
   scale_color_discrete(name = "State") + 
-  geom_vline(xintercept = 0.5, linetype = "dashed") + 
-  geom_hline(yintercept = 0.5, linetype = "dashed") + 
-  theme(text = element_text(size = 24), 
+  theme(text = element_text(size = 20), 
         legend.position = "right")
 ```
 
@@ -115,86 +193,173 @@ What previous plot looks like to someone with 80% deuteranopia (can't see green 
 
 Grouping by region instead of individual states
 
+::: panel-tabset
+### Plot
+
 ```{r}
+#| label: first_fars
 #| out-width: 125%
 #| fig-width: 10.71429
 
-ggplot(fars2022_summary, aes(x = mean_clear, y = mean_daylight)) + 
-  geom_point(size = 4, aes(color = region)) +
-  geom_vline(xintercept = 0.5, linetype = "dashed") + 
-  geom_hline(yintercept = 0.5, linetype = "dashed") + 
-  scale_x_continuous(name = "Fraction of Accidents in Clear Weather") +
-  scale_y_continuous(name = "Fraction of Accidents in Daylight") +
+ggplot(fars2022_summary, aes(x = nice_crash_per_capita, y = not_nice_crash_per_capita)) + 
+  geom_point(size = 4, aes(color = region)) +  
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed") + 
+  scale_x_continuous(name = "Fatal Accidents per 1000 population\n(nice conditions)") +
+  scale_y_continuous(name = "Fatal Accidents per 1000 population\n(not nice conditions)") +
   scale_color_brewer(name = "Region", palette = "Dark2") +
-  theme(text = element_text(size = 24), 
+  theme(text = element_text(size = 20), 
         legend.position = "right")
 ```
+
+### Code
+
+```{r}
+#| label: first_fars
+#| echo: !expr code_flag
+#| eval: false
+```
+:::
+
 
 ##
 
 Labeling outlying states explicitly using `ggrepel` R package (Slowikowski, 2024)
+
+::: panel-tabset
+### Plot
 
 ```{r}
 #| label: final_fars
 #| out-width: 125%
 #| fig-width: 10.71429
 
-ggplot(fars2022_summary, aes(x = mean_clear, y = mean_daylight)) + 
+ggplot(fars2022_summary, aes(x = nice_crash_per_capita, y = not_nice_crash_per_capita)) + 
   geom_point(size = 4, aes(color = region)) +
-  # Adds reference lines
-  geom_vline(xintercept = 0.5, linetype = "dashed") + 
-  geom_hline(yintercept = 0.5, linetype = "dashed") + 
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed") + 
   # Uses R package ggrepel:
-  geom_text_repel(data = filter(fars2022_summary, highlight_state), aes(label = STATENAME), size = 7, force = 3) +
-  scale_x_continuous(name = "Fraction of Accidents in Clear Weather") +
-  scale_y_continuous(name = "Fraction of Accidents in Daylight") +
+  geom_text_repel(data = filter(fars2022_summary, highlight_state), aes(label = STATENAME), size = 6, force = 3) +
+  scale_x_continuous(name = "Fatal Accidents per 1000 population\n(nice conditions)") +
+  scale_y_continuous(name = "Fatal Accidents per 1000 population\n(not nice conditions)") +
   # Use 'Dark2' palette from RColorBrewer
   scale_color_brewer(name = "Region", palette = "Dark2") +
-  theme(text = element_text(size = 24), 
+  theme(text = element_text(size = 20), 
         legend.position = "right")
 ```
 
-## 
 
-1. Clearly something wrong with the data for Virgina regarding daylight accidents. Kansas and Vermont also worth closer look (dropped from plot below)
-2. In US Northeast and South, accidents occurred more often in non-daylight hours and clear weather; in US Midwest, in daylight hours; in US West, there is variability across states
-
+### Code
 
 ```{r}
-find_hull <- function(fars2022_summary) { fars2022_summary[chull(fars2022_summary$mean_daylight, fars2022_summary$mean_clear), ]
+#| label: final_fars
+#| echo: !expr code_flag
+#| eval: false
+```
+:::
+
+
+
+## 
+
+1. Clearly something wrong with the data for Virgina regarding daylight accidents (dropped from plot below). Kansas and Vermont also worth closer look
+2. More fatal crashes in the South; fewer in the Northeast
+
+
+##
+
+
+::: panel-tabset
+### Plot
+
+```{r}
+#| label: regional_fars1
+#| out-width: 125%
+#| fig-width: 10.71429
+
+fars2022_summary %>%
+  filter(STATENAME != "Virginia") %>%
+  ggplot(aes(x = nice_crash_per_capita, y = not_nice_crash_per_capita)) + 
+  geom_point(size = 4, aes(color = region), alpha = 0.5) +
+  geom_point(data = fars2022_regional_summary, aes(color = region), 
+             size = 6, pch = 17) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed") + 
+  scale_x_continuous(name = "Fatal Accidents per 1000 population\n(nice conditions)") +
+  scale_y_continuous(name = "Fatal Accidents per 1000 population\n(not nice conditions)") +
+  # Use 'Dark2' palette from RColorBrewer
+  scale_color_brewer(name = "Region", palette = "Dark2") +
+  theme(text = element_text(size = 20), 
+        legend.position = "right")
+```
+
+
+### Code
+
+```{r}
+#| label: regional_fars1
+#| echo: !expr code_flag
+#| eval: false
+```
+:::
+
+
+##
+
+```{r}
+#| label: hull_setup
+find_hull <- function(fars2022_summary) {
+  fars2022_summary[
+    chull(fars2022_summary$nice_crash_per_capita,
+          fars2022_summary$not_nice_crash_per_capita), 
+  ]
 }
 
+# Feed this into geom_polygon
 hulls <- 
   fars2022_summary %>% 
   filter(STATENAME != "Virginia") %>%
-  filter(STATENAME != "Kansas") %>%
-  filter(STATENAME != "Vermont") %>%
   split(.$region) %>%
   map_df(.f = find_hull)
 ```
 
+::: panel-tabset
+### Plot
+
 ```{r}
+#| label: regional_fars2
 #| out-width: 125%
 #| fig-width: 10.71429
 fars2022_summary %>%
   filter(STATENAME != "Virginia") %>%
-  filter(STATENAME != "Kansas") %>%
-  filter(STATENAME != "Vermont") %>%
-  ggplot(aes(x = mean_clear, y = mean_daylight)) + 
+  #filter(STATENAME != "Kansas") %>%
+  #filter(STATENAME != "Vermont") %>%
+  ggplot(aes(x = nice_crash_per_capita, y = not_nice_crash_per_capita)) + 
   geom_point(size = 4, aes(color = region)) +
-  # Adds reference lines
-  geom_vline(xintercept = 0.5, linetype = "dashed") + 
-  geom_hline(yintercept = 0.5, linetype = "dashed") + 
   geom_polygon(data = hulls, mapping = aes(color = region, fill = region), alpha = 0.2) +
-  scale_x_continuous(name = "Fraction of Accidents in Clear Weather") +
-  scale_y_continuous(name = "Fraction of Accidents in Daylight") +
+  scale_x_continuous(name = "Fatal Accidents per 1000 population\n(nice conditions)") +
+  scale_y_continuous(name = "Fatal Accidents per 1000 population\n(not nice conditions)") +
   # Use 'Dark2' palette from RColorBrewer
   scale_color_brewer(name = "Region", palette = "Dark2") +
   scale_fill_brewer(name = "Region", palette = "Dark2") +
-  theme(text = element_text(size = 24), 
+  theme(text = element_text(size = 20), 
         legend.position = "right")
 
 ```
+
+
+### Code
+
+```{r}
+#| label: hull_setup
+#| echo: true
+#| eval: false
+```
+
+```{r}
+#| label: regional_fars2
+#| echo: !expr code_flag
+#| eval: false
+```
+:::
+
 
 ## Defining Color
 
@@ -203,10 +368,10 @@ fars2022_summary %>%
 Color can be defined by its hue (the defining attribute, e.g. blue or red),
 lightness (the brightness), and chroma (the richness of a color),
 
-  * Three hues (red, green, blue)
-  * Three lightnesses (top [not
+* Three hues (red, green, blue)
+* Three lightnesses (top [not
 bright], middle, bottom [bright])
-  * Ten chromas (left [not intense] to
+* Ten chromas (left [not intense] to
 right [intense])
 
 :::
@@ -434,26 +599,46 @@ Figure 1 from Wong (2010a)
 
 - Ignoring color blindness
 
-    * Use color-blind friendly color palettes when possible
+  * Use color-blind friendly color palettes when possible
 
 - Too Much Information
-    
-    * Use containment or other aesthetics to assist interpretation
-    * Avoid using more than 6-8 colors in a plot (Wong, 2011)
+
+  * Use containment or other aesthetics to assist interpretation
+  * Avoid using more than 6-8 colors in a plot (Wong, 2011)
 
 - Misleading comparisons
 
-    * Viewers have difficulty mapping color changes to quantitative variables
+  * Viewers have difficulty mapping color changes to quantitative variables
 
 - Color scales
 
-    * Consider how colors relate to each other, background
+  * Consider how colors relate to each other, background
+
+
+
+## Code Together Task
+
+
+**No Spice**: Use `fars2022_summary` to create the plot on slide 6. 
+
+**Weak Sauce**: Use `fars2022_summary` to create the plot on slide 8. You will need
+to use the `scale_color_brewer()` option in `ggplot2`
+
+**Medium Spice**: Use `fars2022_summary` and `fars2022_regional_summary` to create the plot on slide 11
+
+**Yoga Flame**: Use `fars2022_summary` to create the plot on slide 9. You will need
+to install and load the `ggrepel` package and use `geom_text_repel()` or `geom_label_repel()`
+
+**Dim Mak**: Use `fars2022_summary` to create the plot on slide 12. Hint: On slide 12 I give
+you code to create a dataset containing the polygons (the 'convex hulls'). You will
+need to use `geom_polygon()`
+
 
 
 ## References
 
 Slowikowski K, 2024. _ggrepel: Automatically Position Non-Overlapping Text Labels with 'ggplot2'_. R package version 0.9.5, <https://CRAN.R-project.org/package=ggrepel>.
-  
+
 Wilke, C.O., 2019. Fundamentals of data visualization: a primer on making informative and compelling figures. O'Reilly Media.
 
 Wong, B., 2010. *Color coding*. Nature Methods, 7(8), pp.573.
