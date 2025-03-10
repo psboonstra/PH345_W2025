@@ -29,6 +29,8 @@ knitr::opts_chunk$set(
 out2fig = function(out.width, out.width.default = 0.7, fig.width.default = 6) {
   fig.width.default * out.width / out.width.default 
 }
+code_flag = FALSE;# Set to true and recompile after class
+code_flag_opposite = !code_flag
 ```
 
 
@@ -105,7 +107,11 @@ John Chambers Award for Statistical Computing (2006); Fellow of ASA (2015); COPS
 1. `facet_wrap()`: wrap a 1D ribbon of plots into 2D grid
 2. `facet_grid()`: create a 2D grid of plots
 
+![](grid_vs_wrap.png){width=60%}
+
+::: {style="font-size: 75%;"}
 See Chapter 16 of `ggplot2` book (<https://ggplot2-book.org/facet>)
+:::
 
 
 ## We've already seen `facet_wrap()`
@@ -122,7 +128,7 @@ See Chapter 16 of `ggplot2` book (<https://ggplot2-book.org/facet>)
 if(!require(datasauRus)) {install.packages("datasauRus");library(datasauRus)}
 ggplot(datasaurus_dozen) +
   geom_point(aes(x = x, y = y), size = 1) + 
-  facet_wrap(vars(dataset), ncol = 5) +
+  facet_wrap(facets = vars(dataset), ncol = 5) +
   guides(color = "none") +
   theme(text = element_text(size = 20)) 
 ```
@@ -137,7 +143,9 @@ ggplot(datasaurus_dozen) +
 :::
 
 
-## `facet_grid()` doesn't 'work' here
+## 
+
+#### `facet_grid()` doesn't 'work' here
 
 ::: panel-tabset
 ### Plot
@@ -151,7 +159,7 @@ ggplot(datasaurus_dozen) +
 if(!require(datasauRus)) {install.packages("datasauRus");library(datasauRus)}
 ggplot(datasaurus_dozen) +
   geom_point(aes(x = x, y = y), size = 1) + 
-  facet_grid(vars(dataset)) +
+  facet_grid(rows = vars(dataset)) +
   guides(color = "none") +
   theme(text = element_text(size = 20)) 
 ```
@@ -165,6 +173,354 @@ ggplot(datasaurus_dozen) +
 ```
 :::
 
+##
+
+#### Doesn't work as columns either
+
+::: panel-tabset
+### Plot
+
+```{r}
+#| fig-asp: 0.7
+#| out-width: 130%
+#| fig-width: 11.14286
+#| label: datasaurus3
+# Install and load datasauRus if not already installed
+ggplot(datasaurus_dozen) +
+  geom_point(aes(x = x, y = y), size = 1) + 
+  facet_grid(cols = vars(dataset)) +
+  guides(color = "none") +
+  theme(text = element_text(size = 20)) 
+```
+
+### Code
+
+```{r}
+#| label: datasaurus3
+#| echo: true
+#| eval: false
+```
+:::
+
+## Malaria 
+
+* Spread by the bite of female *Anopheles* mosquitos, which are hosts to the malaria parasite
+
+* Exists in tropical and subtropical regions with inadequate public health infrastructure
+
+* 263 million cases in 2023; 597,000 deaths
+
+::: {style="font-size: 75%;"}
+US CDC: <https://www.cdc.gov/malaria/data-research/index.html>;
+
+World Malaria Report, WHO: <https://www.who.int/teams/global-malaria-programme/reports/world-malaria-report-2024>
+:::
+
+## Global malaria incidence
+
+WHO collects country-level data on malaria incidence. 
+
+Raw data on incidence per 1000-at risk persons available at <https://data.worldbank.org/indicator/SH.MLR.INCD.P3>
+
+Friendlier data available on canvas (`malaria_countries_long.csv`)
+
+##
+
+####  An unfaceted plot of incidence: Sub-Saharan Africa
+
+::: panel-tabset
+### Plot
+
+```{r}
+malaria_countries <- read_csv("../../Malaria/malaria_countries_long.csv")
+malaria_countries_ssafrica <- malaria_countries %>% filter(region == "Sub-Saharan Africa")
+```
+
+```{r}
+#| label: malaria_ssafrica_color
+#| out-width: 125%
+#| fig-width: 10.71429
+ggplot(malaria_countries_ssafrica) +
+  geom_line(aes(x = year, y = incidence, group = country, color = country), 
+            alpha = 0.75)
+```
+
+### Code
+
+```{r}
+#| echo: true
+#| eval: false
+
+# I've downloaded the data from Canvas into my project folder:
+malaria_countries <- read_csv("malaria_countries_long.csv")
+malaria_countries_ssafrica <- malaria_countries %>% filter(region == "Sub-Saharan Africa")
+```
+
+```{r}
+#| label: malaria_ssafrica_color
+#| echo: true
+#| eval: false
+```
+:::
+
+##
+
+####  An faceted plot of incidence: Sub-Saharan Africa
+
+::: panel-tabset
+### Plot
+
+
+```{r}
+#| label: malaria_ssafrica_facet
+#| out-width: 125%
+#| fig-width: 10.71429
+
+# Create ggplot object for future updating
+p1 <-
+  ggplot(data = malaria_countries_ssafrica,
+         mapping = aes(x = year, y = incidence)) +
+    geom_line() + 
+    facet_wrap(vars(country)) +
+    scale_y_continuous(name = "Incidence per 1000 at-risk persons")
+
+p1
+```
+
+### Code
+
+```{r}
+#| label: malaria_ssafrica_facet
+#| echo: !expr code_flag
+#| eval: false
+```
+:::
+
+##
+
+####  Drop the 'strips'
+
+::: panel-tabset
+### Plot
+
+
+```{r}
+#| label: malaria_ssafrica_facet2
+#| out-width: 125%
+#| fig-width: 10.71429
+
+# Update p1 object from previous slide with the provided hints
+p2 <- 
+  p1 + theme(strip.text = element_blank())
+p2
+```
+
+### Hint
+
+```{r}
+#| echo: true
+#| eval: false
+# To drop the strips completely, add this to your code:
+theme(strip.text = element_blank())
+
+```
+
+### Code
+
+```{r}
+#| label: malaria_ssafrica_facet2
+#| echo: !expr code_flag
+#| eval: false
+```
+:::
+
+
+##
+
+####  Add labels inside
+
+::: panel-tabset
+### Plot
+
+
+```{r}
+#| label: malaria_ssafrica_facet3
+#| out-width: 125%
+#| fig-width: 10.71429
+
+# Update p1 object from previous slide with the provided hints
+p3 <- 
+  p2 +
+    # The '.' means we are taking the data inherited from the p1 object
+    # and further modifying it
+    geom_text(data = . %>% group_by(country) %>% slice(1),
+              aes(label = country), x = 2000, y = 650, hjust = 0, size = 3)+
+    theme(strip.text = element_blank())
+p3
+```
+
+### Hint
+
+```{r}
+#| echo: true
+#| eval: false
+# To add labels to the plots, use a dataset with just one row per country:
+malaria_countries_ssafrica %>%
+  group_by(country) %>%
+  slice(1)
+
+```
+
+### Code
+
+```{r}
+#| label: malaria_ssafrica_facet3
+#| echo: !expr code_flag
+#| eval: false
+```
+:::
+
+
+## 
+
+####  Arrange countries by the change in incidence from 2000 to 2022
+
+::: panel-tabset
+### Plot
+
+
+```{r}
+#| label: malaria_ssafrica_facet4
+#| out-width: 125%
+#| fig-width: 10.71429
+
+malaria_countries_ssafrica2 <- 
+  malaria_countries_ssafrica %>% 
+  group_by(country) %>%
+  # Note we are using mutate not summarize since we want to keep the year-level
+  # data. Because the data are grouped by `Country Code`, the result will just
+  # be constant within country
+  mutate(delta_incidence = last(incidence) - first(incidence)) %>% 
+  ungroup() %>% 
+  # Now sort by the calculated value, then country name, then year
+  arrange(delta_incidence, country, year) %>% 
+  # Now we recharacterize Country name as a factor with levels as they
+  # are arranged
+  mutate(country = factor(country) %>% fct_inorder())
+
+# update p3 object from previous slide with new data
+# Note use of new operator `%+%` for updating data. Type ?'%+%' for more infor
+p4 <- p3 %+% malaria_countries_ssafrica2
+p4
+```
+
+### Hint
+
+```{r}
+#| echo: true
+#| eval: false
+# Create a new variable called delta_incidence that is the difference 
+# between the last and first incidence values for each country. 
+# Then arrange the data by this variable and turn country into a factor
+# with levels in the order that they appear in the data:
+
+mutate(country = factor(country) %>% fct_inorder())
+
+```
+
+### Code
+
+```{r}
+#| label: malaria_ssafrica_facet4
+#| echo: !expr code_flag
+#| eval: false
+```
+:::
+
+## 
+
+####  Anchor all panels with the Sub-Saharan-wide trajectory
+
+::: panel-tabset
+### Plot
+
+```{r}
+malaria_all_ssafrica <- read_csv("../../Malaria/malaria_other_long.csv") %>% filter(name == "Sub-Saharan Africa")
+```
+
+```{r}
+#| label: malaria_ssafrica_facet5
+#| out-width: 125%
+#| fig-width: 10.71429
+
+p4 + 
+  geom_line(data = malaria_all_ssafrica,
+            linetype = "dashed", alpha = 0.75) +
+  scale_x_continuous(breaks = c(2000, 2010, 2020))
+```
+
+### Code
+
+```{r}
+#| echo: true
+#| eval: false
+
+# I've downloaded the data from Canvas into my project folder:
+malaria_all_ssafrica <- read_csv("Malaria/malaria_other_long.csv") %>% filter(name == "Sub-Saharan Africa")
+```
+
+```{r}
+#| label: malaria_ssafrica_facet5
+#| echo: !expr code_flag
+#| eval: false
+```
+:::
+
+##
+
+####  An example with varying y-axes
+
+::: panel-tabset
+### Plot
+
+
+```{r}
+#| label: malaria_ssafrica_facet6
+#| out-width: 125%
+#| fig-width: 10.71429
+
+ggplot(data = malaria_countries_ssafrica,
+       mapping = aes(x = year, y = incidence)) +
+  geom_line() + 
+  facet_wrap(vars(country), scales = "free_y") +
+  scale_y_continuous(name = "Incidence per 1000 at-risk persons")
+
+```
+
+### Hint
+
+```{r}
+#| echo: !expr code_flag_opposite
+#| eval: false
+# Look up the `scales` argument in the `facet_wrap` documentation. Find
+# up the documentation with this:
+?facet_wrap
+```
+
+### Code
+
+```{r}
+#| label: malaria_ssafrica_facet6
+#| echo: !expr code_flag
+#| eval: false
+```
+:::
+
+:::{.speaker-notes}
+Think about differences between choice of varying y-axes:
+Varying y-axes are essentially many individual plots. 
+Varying y-axes make it easier to evaluate differences within a panel but harder to compare between panels
+:::
 
 ## Unemployment in USA
 
@@ -189,6 +545,22 @@ Anna Maria Barry-Jester, <https://fivethirtyeight.com/features/as-u-s-life-expec
 :::{.speaker-notes}
 Sort of a facet grid by categorized latitude and longtitude. The trend line provides an anchor. The amount of purple and orange allow to immediately determine 
 :::
+
+
+## Code Together Task
+
+
+**No Spice**: Make the standard faceted plot on slide 15;
+
+**Weak Sauce**: Make the faceted plot without strips on slide 16; Make the faceted
+plot with varying y-axes on slide 20;
+
+**Medium Spice**: Make the faceted plot with inside labels on slide 17
+
+**Yoga Flame**: Make the faceted plot with reordered facets on slide 18
+
+**Dim Mak**: Make the faceted plot with the Sub-Saharan Africa trajectory on slide 19
+
 
 ## References
 

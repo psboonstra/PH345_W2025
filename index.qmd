@@ -22,7 +22,7 @@ editor: source
 
 [Color](https://psboonstra.github.io/PH345_W2025/Slides/Color/Color#/title-slide)
 
-Facets
+[Facets](https://psboonstra.github.io/PH345_W2025/Slides/Facets/Facets#/title-slide)
 
 Maps
 
