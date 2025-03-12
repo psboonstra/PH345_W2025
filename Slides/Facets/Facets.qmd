@@ -351,7 +351,7 @@ theme(strip.text = element_blank())
 # Update p1 object from previous slide with the provided hints
 p3 <- 
   p2 +
-    # The '.' means we are taking the data inherited from the p1 object
+    # The '.' means we are taking the data inherited from the p2 object
     # and further modifying it
     geom_text(data = . %>% group_by(country) %>% slice(1),
               aes(label = country), x = 2000, y = 650, hjust = 0, size = 3)+
@@ -474,6 +474,49 @@ malaria_all_ssafrica <- read_csv("Malaria/malaria_other_long.csv") %>% filter(na
 #| echo: !expr code_flag
 #| eval: false
 ```
+
+### Code (Stand alone)
+
+```{r}
+#| label: malaria_ssafrica_facet6
+#| echo: !expr code_flag
+#| eval: false
+
+# This is a complete, stand-alone version to make the same plot
+
+malaria_countries <- read_csv("malaria_countries_long.csv")
+malaria_countries_ssafrica <- malaria_countries %>% filter(region == "Sub-Saharan Africa")
+
+malaria_countries_ssafrica2 <- 
+  malaria_countries_ssafrica %>% 
+  group_by(country) %>%
+  # Note we are using mutate not summarize since we want to keep the year-level
+  # data. Because the data are grouped by `Country Code`, the result will just
+  # be constant within country
+  mutate(delta_incidence = last(incidence) - first(incidence)) %>% 
+  ungroup() %>% 
+  # Now sort by the calculated value, then country name, then year
+  arrange(delta_incidence, country, year) %>% 
+  # Now we recharacterize Country name as a factor with levels as they
+  # are arranged
+  mutate(country = factor(country) %>% fct_inorder())
+
+# I've downloaded the data from Canvas into my project folder:
+malaria_all_ssafrica <- read_csv("Malaria/malaria_other_long.csv") %>% filter(name == "Sub-Saharan Africa")
+
+ggplot(data = malaria_countries_ssafrica2,
+       mapping = aes(x = year, y = incidence)) +
+  geom_line() + 
+  geom_text(data = . %>% group_by(country) %>% slice(1),
+            aes(label = country), x = 2000, y = 650, hjust = 0, size = 3) +
+  geom_line(data = malaria_all_ssafrica,
+            linetype = "dashed", alpha = 0.75) +
+  facet_wrap(vars(country)) +
+  scale_x_continuous(breaks = c(2000, 2010, 2020)) +
+  scale_y_continuous(name = "Incidence per 1000 at-risk persons") + 
+  theme(strip.text = element_blank())
+
+```
 :::
 
 ##
@@ -485,7 +528,7 @@ malaria_all_ssafrica <- read_csv("Malaria/malaria_other_long.csv") %>% filter(na
 
 
 ```{r}
-#| label: malaria_ssafrica_facet6
+#| label: malaria_ssafrica_facet7
 #| out-width: 125%
 #| fig-width: 10.71429
 
@@ -510,7 +553,7 @@ ggplot(data = malaria_countries_ssafrica,
 ### Code
 
 ```{r}
-#| label: malaria_ssafrica_facet6
+#| label: malaria_ssafrica_facet7
 #| echo: !expr code_flag
 #| eval: false
 ```
