@@ -24,7 +24,7 @@ editor: source
 
 [Facets](https://psboonstra.github.io/PH345_W2025/Slides/Facets/Facets#/title-slide)
 
-Maps
+[Maps](https://psboonstra.github.io/PH345_W2025/Slides/Maps/Maps#/title-slide)
 
 Case Study: 1900 Paris Exposition
 
