@@ -26,9 +26,9 @@ editor: source
 
 [Maps](https://psboonstra.github.io/PH345_W2025/Slides/Maps/Maps#/title-slide)
 
-Case Study: 1900 Paris Exposition
+[Chartjunk, Deception, and Chicanery](https://psboonstra.github.io/PH345_W2025/Slides/Chartjunk/Chartjunk#/title-slide)
 
-Chartjunk, Deception, and Chicanery
+Case Study: 1900 Paris Exposition
 
 ggplot2 Extensions
 
