@@ -58,8 +58,7 @@ World's fair held April-November 1900
 
 ## American Negro Exhibit
 
-Thomas J. Calloway and Booker T. Washington petitioned US government to include exhibit dedicated
-to social and economic progress of Black Americans: *The American Negro Exhibit*
+Thomas J. Calloway and Booker T. Washington petitioned US government to include exhibit dedicated to social and economic progress of Black Americans: *The American Negro Exhibit*
 
 Invited former classmate W.E.B DuBois to create social study of African American life
 
@@ -88,7 +87,7 @@ First African American to receive PhD from Harvard University
 
 ##
 
-DuBois and students from Atlanta University created two sets of infographics and data visualizations 
+DuBois and students from Atlanta University created two sets of infographics and data visualizations using data from DuBois' own sociological laboratory and US Censur Bureau:
 
 1. The Georgia Negro: A Social Study (36 plates)
 2. A Series of Statistical Charts Illustrating the Condition of the Descendents
@@ -99,11 +98,18 @@ use of color
 
 ## Three refutations
 
-1. The Black race was not going extinct (contrast with social Darwinism)
+1. The Black race was not going extinct 
 
-2. Highlighted Black American progress in spite of slavery, Jim Crow, and white supremacy (contrast with imperalist ethos of Exposition: lifting lower races out of barbarism)
+    * contrast with social Darwinism
+
+2. Highlighted Black American progress in spite of slavery, Jim Crow, and white supremacy 
+
+  
+    * contrast with imperalist ethos of Exposition: lifting lower races out of barbarism (p19, Battle-Baptiste and Rusert)
 
 3. Black Americans (and all those of African descent) had their own history, civilization, and culture, both within and separate from white America
+
+    * "exploded mainstream ideas about the lack of Black accomplishments" (p7, Provenzo)
 
 
 
@@ -135,6 +141,18 @@ use of color
 :::{.speaker-notes}
 
 :::
+
+
+##
+
+
+![](plate6.jpg){width=100%}
+
+
+::: {style="font-size: 75%;"}
+[Plate 6](https://www.loc.gov/pictures/collection/anedub/item/2013650425/)
+:::
+
 
 ## 
 
@@ -276,11 +294,11 @@ use of color
 
 :::
 
-## (more to do yet)
-
 
 ## References
 
 Battle-Baptiste, W. and Rusert, B. eds., 2018. WEB Du Bois's data portraits: Visualizing black America. Chronicle Books.
 
 Du Bois, W.E.B., 1900. African American photographs assembled for 1900 Paris Exposition. Library of Congress, Washington, DC [online](https://www.loc.gov/pictures/collection/anedub)
+
+Provenzo, E.F., 2023. WEB DuBois's Exhibit of American Negroes: African Americans at the Beginning of the Twentieth Century. Rowman & Littlefield.
