@@ -30,6 +30,9 @@ editor: source
 
 [Case Study: 1900 Paris Exposition](https://psboonstra.github.io/PH345_W2025/Slides/ParisExposition/ParisExposition#/title-slide)
 
+[Models](https://psboonstra.github.io/PH345_W2025/Slides/Models/ModelVisualization#/title-slide)
+
+
 ggplot2 Extensions
 
 Shiny
