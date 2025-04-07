@@ -29,7 +29,7 @@ knitr::opts_chunk$set(
 out2fig = function(out.width, out.width.default = 0.7, fig.width.default = 6) {
   fig.width.default * out.width / out.width.default
 }
-code_flag = FALSE;# Set to true and recompile after class
+code_flag = TRUE;# Set to true and recompile after class
 
 ```
 
