@@ -32,7 +32,4 @@ editor: source
 
 [Models](https://psboonstra.github.io/PH345_W2025/Slides/Models/ModelVisualization#/title-slide)
 
-
-ggplot2 Extensions
-
-Shiny
+[Shiny](https://psboonstra.github.io/PH345_W2025/Slides/Shiny/Shiny#/title-slide)

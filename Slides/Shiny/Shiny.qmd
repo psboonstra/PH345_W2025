@@ -1,0 +1,92 @@
+---
+title: "Shiny"
+author: "Phil Boonstra"
+subtitle: "PH345: Winter 2025"
+format: 
+  revealjs:
+    smaller: true
+    scrollable: true
+    theme: serif
+    self-contained: true
+    slide-number: c/t
+    footer: "[Course Home Page](https://psboonstra.github.io/PH345_W2025/)"
+editor: source
+engine: knitr
+---
+
+```{r}
+library(datasauRus)
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+# See here:https://arelbundock.com/posts/quarto_figures/index.html
+knitr::opts_chunk$set(
+  out.width = "70%", # enough room to breath
+  fig.width = 6,     # reasonable size
+  fig.asp = 0.618,   # golden ratio
+  fig.align = "center" # mostly what I want
+)
+out2fig = function(out.width, out.width.default = 0.7, fig.width.default = 6) {
+  fig.width.default * out.width / out.width.default 
+}
+code_flag = TRUE;# Set to true and recompile after class
+code_flag_opposite = !code_flag
+```
+
+
+## 
+### Static plots
+
+So far this semester we've made *static* plots: they are images that can't be modified
+or interacted with. Obviously necessary for dissemination of results in reports, journal articles, and books
+
+##
+### Interactive plots
+
+No practical requirement that visualiztions on websites are static. 
+
+*Interactive* plot allow your audience to visualize the data in ways that you may
+not have anticipated. 
+
+##
+
+### Options for interactive plots
+
+- Plotly
+- ggiraph
+- Shiny
+
+##
+
+### Plan for rest of semester
+
+- Learn about shiny
+- Make a shiny app together
+- Create a shiny app using one of our datasets
+
+##
+
+<https://shiny.posit.co/r/gallery/start-simple/kmeans-example/>
+
+##
+
+<https://hoga.shinyapps.io/healthdown/>
+
+## 
+
+Mastering Shiny by Hadley Wickham
+<https://mastering-shiny.org/index.html>
+
+
+## Project suggestions
+
+Create an app that...
+
+1. allows the user to select the different types of scatterplots for the global temperature anomaly data over time (see *Scatterplots* lecture). Uses `temp_northern.csv` or `temp_southern.csv` on Canvas
+2. allows the user to select one or more cities (Detroit, Juneau, and/or San Diego), one month, and either the actual average temperature or the anomaly from the average temperature, and plot the selected value for that month for the selected cities over all years. Uses `three_cities.csv` on Canvas
+3. allows the user to select a year and create a scatterplot comparing any two of `account`, `borrowed`, `saved`, `mobile`, and `internet` for all countries in that year. Uses `findex_dat.csv` on Canvas
+4. allows the user to select a type of barplot (stacked, filled, or dodged) of running surface type (see *Univariate Plots*). Uses Ultrarunning data 
+5. allows the user to facet on region or income group and show, within each group, all countries' maternal mortality rates over time. Uses the `matmort_countries_long.csv` on Canvas
+6. [suggest something else using one of our datasets]
+
+## References
